@@ -26,8 +26,28 @@
             <li><a class="dropdown-item" href="{{ route('indexFornecedor') }}">Adicionar um novo fornecedor</a></li>
             <li><a class="dropdown-item" href="{{ route('listagemFornecedor')}}">Fornecedores cadastrados</a></li>
           </ul>
-        </li>        
-      </ul>       
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Gerenciar armazém
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Inserir novo armazém</a></li>
+              <li><a class="dropdown-item" href="#">Gerenciar movimentação</a></li>
+            </ul>
+          </li> 
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+             Produtos
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Inserir um novo produto</a></li>
+              <li><a class="dropdown-item" href="#">Listagem de produtos</a></li>
+            </ul>
+          </li>
+      </ul>
 
       <!-- Adicionando o formulário de logout -->
       <form action="{{ route('logout') }}" method="POST">
