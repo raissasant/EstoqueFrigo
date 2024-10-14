@@ -13,6 +13,8 @@
   <!-- IonIcons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js">
@@ -33,9 +35,9 @@
                 $("#bairro").val("");
                 $("#cidade").val("");
                 $("#uf").val("");
-               
+
             }
-            
+
             //Quando o campo cep perde o foco.
             $("#cep").blur(function() {
 
@@ -56,7 +58,7 @@
                         $("#bairro").val("...");
                         $("#cidade").val("...");
                         $("#uf").val("...");
-                       
+
 
                         //Consulta o webservice viacep.com.br/
                         $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
@@ -67,7 +69,7 @@
                                 $("#bairro").val(dados.bairro);
                                 $("#cidade").val(dados.localidade);
                                 $("#uf").val(dados.uf);
-                                
+
                             } //end if.
                             else {
                                 //CEP pesquisado não foi encontrado.
@@ -91,18 +93,18 @@
 
     </script>
 
-   
+
   <!--Font Awesome---->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
 </head>
 
 
     <!--Menu lateral -->
-    
-      @yield('content')
-    
 
-  
+      @yield('content')
+
+
+
 
 
 
@@ -113,7 +115,7 @@
   <!-- Main Footer -->
   <footer class="main-footer">
     <strong> <a href="https://adminlte.io">Gestão de estoque</a>.</strong>
-   
+
     <div class="float-right d-none d-sm-inline-block">
       <b>Versão</b>2.0
     </div>
@@ -139,4 +141,3 @@
 <script src="dist/js/pages/dashboard3.js"></script>
 </body>
 </html>
-

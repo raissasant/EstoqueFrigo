@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -24,7 +23,7 @@ class User extends Authenticatable
         'cpf',
         'data_nascimento',
     ];
-     
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -44,10 +43,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function admin(){
-
+    /**
+     * Relacionamento com o modelo Admin
+     * Um usuário pertence a um Admin
+     */
+    public function admin()
+    {
         return $this->belongsTo(Admin::class, 'admin_id');
-
     }
 
+    /**
+     * Relacionamento com o modelo Produto
+     * Um usuário pode ter muitos produtos
+     */
+    public function produtos()
+    {
+        return $this->hasMany(Produto::class, 'user_id', 'id'); // Definindo a chave estrangeira 'user_id'
+    }
 }
