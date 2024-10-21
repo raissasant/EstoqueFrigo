@@ -114,10 +114,10 @@
 
   <!-- Main Footer -->
   <footer class="main-footer">
-    <strong> <a href="https://adminlte.io">Gestão de estoque</a>.</strong>
+    <strong> <a href="https://adminlte.io" class="text-danger">Gestão de estoque frigorífico</a>.</strong>
 
     <div class="float-right d-none d-sm-inline-block">
-      <b>Versão</b>2.0
+      <b class="text-danger">Versão</b>2.0
     </div>
   </footer>
 </div>

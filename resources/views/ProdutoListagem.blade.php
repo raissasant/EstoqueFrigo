@@ -16,8 +16,8 @@
     <div class="alert alert-warning">
         {{ $message }}
     </div>
-@endif
 
+@endif
 
 
 <h1>Listagem de produtos</h1>
@@ -44,9 +44,9 @@
                 <td>{{ $produto->valor_compra}}</td>
                 <td>{{ $produto->valor_venda }}</td>
                 <td>{{ $produto->quantidade }}</td>
-               
+
                 <td>
-                     <div id="qrcode-{{ $produto->id }}"></div> 
+                     <div id="qrcode-{{ $produto->id }}"></div>
             </td>
             <td>
 
@@ -69,7 +69,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         @foreach($produtos as $produto)
-            var qrContent = 'Produto: {{ $produto->name }} - Categoria: {{ $produto->categoria }} - SKU: {{ $produto->sku }} - Valor compra(R$): {{ $produto->valor_compra }} - Valor venda(R$): {{ $produto->valor_venda }} - Quantidade: {{ $produto->quantidade}}'; 
+            var qrContent = 'Produto: {{ $produto->name }} - Categoria: {{ $produto->categoria }} - SKU: {{ $produto->sku }} - Valor compra(R$): {{ $produto->valor_compra }} - Valor venda(R$): {{ $produto->valor_venda }} - Quantidade: {{ $produto->quantidade}}';
             var qrcodeElement = document.getElementById("qrcode-{{ $produto->id }}");
 
             if (qrcodeElement) {

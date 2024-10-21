@@ -78,7 +78,22 @@ class AdminController extends Controller
     // Página do administrador
     public function index()
     {
-        return view('homeAdmin');
+        $user = Auth::user();
+        $admin = Auth::guard('admins')->user();
+
+        //dd($admin);
+
+        // Buscar usuários associados ao admin logado
+         $users = $admin->users;
+         $fornecedores = $admin->fornecedores;
+
+        $ContagemFornecedor = $fornecedores->count();
+
+        $ContagemUser = $users->count();
+
+
+
+        return view('homeAdmin',['ContagemUser' => $ContagemUser, 'ContagemFornecedor' => $ContagemFornecedor]);
     }
 
 

@@ -4,6 +4,8 @@
 
 @section('content')
 
+<br>
+
 <form action="{{ route('searchFornecedores') }}" method="GET">
     @csrf
      <div class="mb-3">

@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Rules\Cpf; #--- Importando o Rules CPF do Laravel --# php artisan make:rule CPF
 use App\Models\User;
+use App\Models\Admin;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Auth;
-
 
 
 class UsuarioController extends Controller
@@ -43,7 +43,9 @@ class UsuarioController extends Controller
         $user->data_nascimento= $request->input('data_nascimento');
         $user->save();
 
-        return "Salvo com sucesso";
+        //return "Salvo com sucesso";
+        return redirect()->route('listagem/user');
+
 
    }
 
@@ -60,50 +62,74 @@ class UsuarioController extends Controller
 
     public function editUsuario($id)
     {
+        /** @var Admin $admin */
         $admin = Auth::guard('admins')->user();
 
-        // Buscar um usuário específico pelo ID
+        // Busca o usuário associado ao admin logado pelo ID
         $user = $admin->users()->where('id', $id)->firstOrFail();
 
+        // Retorna a view de edição do usuário
         return view('EditarUsuario', ['user' => $user]);
     }
 
+
     public function atualizarUsuario(Request $request, $id)
-{
-    $admin = Auth::guard('admins')->user();
+    {
+        /** @var Admin $admin */
+        $admin = Auth::guard('admins')->user();
 
-    // Buscar o usuário específico pelo ID
-    $user = $admin->users()->where('id', $id)->firstOrFail();
+        // Busca o usuário associado ao admin logado
+        $user = $admin->users()->where('id', $id)->firstOrFail();
 
-    // Validação da entrada
-    $request->validate([
-        'name' => 'required|string|max:60',
-        'email' => 'required|email',
-        'password' => 'required|string|max:8',
-        'data_nascimento' => 'required|date_format:d/m/Y', // Valida o formato dd/mm/yyyy
-    ]);
+        // Validação dos dados do formulário
+        $request->validate([
+            'name' => 'nullable|string',
+            'email' => 'nullable|email',
+            'password' => 'nullable|string|min:6',
+            'data_nascimento' => 'nullable|date',
+        ]);
 
-    // Atualizar os dados do usuário
-    $user->name = $request->input('name');
-    $user->email = $request->input('email');
-    $user->data_nascimento = \Carbon\Carbon::createFromFormat('d/m/Y', $request->input('data_nascimento'))->format('d-m-Y'); // Converte para Y-m-d
-    $user->password = bcrypt($request->input('password'));
-    $user->save();
+        // Atualiza os campos preenchidos
+        if ($request->filled('name')) {
+            $user->name = $request->input('name');
+        }
+        if ($request->filled('email')) {
+            $user->email = $request->input('email');
+        }
+        if ($request->filled('data_nascimento')) {
+            $user->data_nascimento = $request->input('data_nascimento');
+        }
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->input('password'));
+        }
 
-    return 'Usuário atualizado com sucesso';
-}
+        // Salva as alterações no banco de dados
+        $user->save();
+
+        // Redireciona com mensagem de sucesso
+        return redirect()->route('listagem/user')->with('success', 'Usuário atualizado com sucesso.');
+    }
+
 
     public function destroy($id)
     {
+        /** @var Admin $admin */
         $admin = Auth::guard('admins')->user();
 
-        // Buscar um usuário específico pelo ID
-        $user = $admin->users()->where('id', $id)->firstOrFail();
+        // Busca o usuário associado ao admin logado
+        /** @var User|null $user */
+        $user = $admin->users()->where('id', $id)->first();
 
-        $user->delete();
+        // Verifica se o usuário foi encontrado antes de tentar deletar
+        if ($user) {
+            $user->delete();
+            return 'Usuário deletado(a) com sucesso';
+        }
 
-        return 'Usuário deletado com sucesso';
+        return 'Usuário não encontrado';
     }
+
+
 
 
     public function loginUser(){
@@ -167,8 +193,19 @@ class UsuarioController extends Controller
 
 
     public function homeUsuario(){
-        return view('Usuario');
+        $user = Auth::user();
+        $produtos = $user->produtos;
+        $armazens = $user->armazens;
+
+        $ContagemProdutos = $produtos->count();
+        $ContagemArmazens = $armazens->count();
+
+        return view('Usuario',['ContagemProdutos' => $ContagemProdutos, 'ContagemArmazens' => $ContagemArmazens]);
     }
+
+
+
+
 
 
  public function logout(Request $request)

@@ -3,10 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Models\Fornecedor;
-use App\Models\User;
-
 
 class Admin extends Authenticatable
 {
@@ -19,14 +17,16 @@ class Admin extends Authenticatable
         'password',
     ];
 
-    public function users()
-    {
+    public function users(){
 
         return $this->hasMany(User::class, 'admin_id');
     }
 
-    public function fornecedor()
-    {
-        return $this->hasMany(Fornecedor::class, 'admin_id');  // Certifique-se de que a chave estrangeira está correta
-    }
+    public function fornecedores(){
+
+         return $this->hasMany(Fornecedor::class);
+}
+
+
+
 }

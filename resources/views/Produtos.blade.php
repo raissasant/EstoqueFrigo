@@ -22,11 +22,11 @@
       <input type="text" class="form-control" name="descricao" required id="exampleFormControlInput1" placeholder=" Informe a descrição">
     </div>
       <div class="mb-3">
-      <label for="exampleFormControlInput1" class="form-label">Valor de compra</label>
+      <label for="exampleFormControlInput1" class="form-label">Valor de compra(R$)</label>
       <input type="text" class="form-control" name="valor_compra"  required  id="exampleFormControlInput1" placeholder="Informe o valor de compra, coloque somente números inteiros">
     </div>
     <div class="mb-3">
-      <label for="exampleFormControlInput1" class="form-label">Valor de venda</label>
+      <label for="exampleFormControlInput1" class="form-label">Valor de venda(R$)</label>
       <input type="text" class="form-control" name="valor_venda" required id="exampleFormControlInput1" placeholder="Informe o valor de venda, coloque somente números inteiros">
     </div>
       <div class="mb-3">
@@ -55,13 +55,10 @@
         <option value="Alimentos(Produtos no geral)">Alimentos(Produtos no geral)</option>
       </select>
         </div>
-        <div class="form-group">
-            <label for="sku">SKU</label>
-            <input type="text" class="form-control" name="sku" id="sku" value="{{ old('sku') }}" required>
-            @if ($errors->has('sku'))
-                <div class="alert alert-danger">{{ $errors->first('sku') }}</div>
-            @endif
-        </div>
+        <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">SKU</label>
+        <input type="text" class="form-control" required name="sku" id="exampleFormControlInput1" placeholder="Informe o SKU do produto">
+      </div>
 
 
 <button  type="submit" class="btn btn-success">Salvar os dados produto</button>

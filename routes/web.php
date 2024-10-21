@@ -6,6 +6,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ResertSenhaController;
 use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\ArmazemController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,17 +18,17 @@ use App\Http\Controllers\ProdutoController;
 |
 */
 
-//http://127.0.0.1:8000 
+//http://127.0.0.1:8000
 //http://127.0.0.1:8000/login
 //http://127.0.0.1:8000/admin #--Para salvar o admin que esta no AdminController --#
-//http://127.0.0.1:8000/homeAdmin 
+//http://127.0.0.1:8000/homeAdmin
 //http://127.0.0.1:8000/cadastro/user
 //http://127.0.0.1:8000/login/usuario #-- Usuário fazer o login --#
-//http://127.0.0.1:8000 
+//http://127.0.0.1:8000
 //http://127.0.0.1:8000/editar/fornecedor/{id}
 //http://127.0.0.1:8000/cadastro/fornecedor
 //http://127.0.0.1:8000/listagem/produto
-//http://127.0.0.1:8000/cadastro/produto 
+//http://127.0.0.1:8000/cadastro/produto
 //http://127.0.0.1:8000
 
 
@@ -70,7 +71,7 @@ Route::get('/cadastro/user',[UsuarioController::class, 'index'])->name('cadastro
 Route::post('/cadastrando/user',[UsuarioController::class, 'store'])->name('cadastrando/user');
 Route::get('/listagem/user',[UsuarioController::class, 'listagemUser'])->name('listagem/user');
 Route::get('/editar/user/{id}', [UsuarioController::class, 'editUsuario'])->name('editar.usuario');
-Route::post('/atualizar/user/{id}', [UsuarioController::class, 'atualizarUsuario'])->name('atualizar.usuario');
+Route::put('/atualizar/user/{id}', [UsuarioController::class, 'atualizarUsuario'])->name('atualizar.usuario');
 Route::get('/deletar/user/{id}', [UsuarioController::class, 'destroy'])->name('deletar.usuario');
 // --Fim do  CRUD do Usuário --\\
 
@@ -99,3 +100,12 @@ Route::get('/atualizar/produto/{id}',[ProdutoController::class, 'editProduto'])-
 Route::post('editando/produto/{id}',[ProdutoController::class, 'AtualizandoProduto'])->name('atualizandoProduto');
 Route::delete('/produtos/{id}', [ProdutoController::class, 'deleteProduto'])->name('deleteProduto');
 Route::get('/produto/search', [ProdutoController::class, 'SearchProduto'])->name('SearchProduto');
+
+///- Armazém --\\
+
+Route::get('/cadastro/armazem',[ArmazemController::class, 'TelaArmazem'])->name('cadastroArmazem');
+Route::post('/cadastrando/armazem',[ArmazemController::class, 'storeArmazem'])->name('storeArmazem');
+Route::get('/armazens', [ArmazemController::class, 'ListagemArmazem'])->name('ListagemArmazem');
+Route::get('/atualizar/armazem/{id}',[ArmazemController::class, 'editArmazem'])->name('editArmazem');
+Route::post('editando/armazem/{id}',[ArmazemController::class, 'AtualizandoArmazem'])->name('atualizandoArmazem');
+Route::delete('delete/armazem/{id}', [ArmazemController::class, 'deleteArmazem'])->name('deleteArmazem');

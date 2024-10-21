@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Produto extends Model
 {
-    protected $table = '_produtos'; 
+
+    /**
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Produto[] $produtos
+ */
+    protected $table = '_produtos';
     // Definindo o relacionamento com o User
     public function user()
     {
