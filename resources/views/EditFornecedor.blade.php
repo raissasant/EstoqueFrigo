@@ -1,91 +1,97 @@
 @extends('paginas.base')
-
 @extends('paginas.nav')
 
 @section('content')
 
+<div class="wrapper" style="display: flex;">
 
-
-<br>
-
-
-
-    <div class="container">
+  <!-- Conteúdo Principal -->
+  <div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1; max-width: calc(100% - 250px);">
     <h1>Editar e atualizar fornecedor</h1>
-    <form action="{{  route('AtualizandoFornecedor', ['id' => $fornecedor->id]) }}" method="POST">
+    
+    <form action="{{ route('atualizandoFornecedor', ['id' => $fornecedor->id]) }}" method="POST">
         @csrf
-        <div class="form-group">
+
+        <!-- Nome do Fornecedor -->
+        <div class="form-group mb-3">
           <label for="name">Nome</label>
-          <input type="text" class="form-control" name="name" id="name" value="{{ $fornecedor->name }}">
+          <input type="text" class="form-control" name="name" id="name" value="{{ $fornecedor->name }}" required>
        </div>
 
-        <div class="form-group">
+        <!-- Email do Fornecedor -->
+        <div class="form-group mb-3">
             <label for="email">Email</label>
-            <input type="email" class="form-control" name="email" id="email" value="{{ $fornecedor->email }}">
+            <input type="email" class="form-control" name="email" id="email" value="{{ $fornecedor->email }}" required>
         </div>
 
-        <div class="form-group">
+        <!-- Telefone do Fornecedor -->
+        <div class="form-group mb-3">
             <label for="telefone">Telefone</label>
-            <input type="tel" class="form-control" name="telefone" id="telefone" value="{{ $fornecedor->telefone }}">
+            <input type="tel" class="form-control" name="telefone" id="telefone" value="{{ $fornecedor->telefone }}" required>
         </div>
 
-        <div class="form-group">
-            <label>CEP(insira o CEP e depois aperte a tecla TAB)</label>
-            <input  name="cep" type="text" id="cep" value="" size="10" maxlength="9" 
-            value="{{ $fornecedor->cep}}">
+        <!-- Campos de Endereço -->
 
+        <!-- CEP -->
+        <div class="form-group mb-3">
+            <label for="cep">CEP (insira o CEP e pressione TAB)</label>
+            <input type="text" class="form-control" name="cep" id="cep" value="{{ $fornecedor->cep }}" required>
         </div>
-        <div class="form-group">
-            <label>Rua</label>
-            <input name="rua" type="text" id="rua" size="60"
-            value="{{ $fornecedor->rua}}">
 
+        <!-- Rua -->
+        <div class="form-group mb-3">
+            <label for="rua">Rua</label>
+            <input type="text" class="form-control" name="rua" id="rua" value="{{ $fornecedor->rua }}" required>
         </div>
-        <div class="form-group">
-            <label>Complemento</label>
-            <input name="complemento" type="text" id="complemento" size="60"
-            value="{{ $fornecedor->complemento}}">
 
+        <!-- Complemento -->
+        <div class="form-group mb-3">
+            <label for="complemento">Complemento</label>
+            <input type="text" class="form-control" name="complemento" id="complemento" value="{{ $fornecedor->complemento }}">
         </div>
-        <div class="form-group">
-            <label >Bairro</label>
-            <input name="bairro" type="text" id="bairro" size="40" 
-            value="{{$fornecedor->bairro }}">
 
+        <!-- Bairro -->
+        <div class="form-group mb-3">
+            <label for="bairro">Bairro</label>
+            <input type="text" class="form-control" name="bairro" id="bairro" value="{{ $fornecedor->bairro }}" required>
         </div>
-        <div class="form-group">
-            <label for="date">Cidade</label>
-            <input name="cidade" type="text" id="cidade" size="40" 
-            value="{{ $fornecedor->cidade }}">
 
+        <!-- Cidade -->
+        <div class="form-group mb-3">
+            <label for="cidade">Cidade</label>
+            <input type="text" class="form-control" name="cidade" id="cidade" value="{{ $fornecedor->cidade }}" required>
         </div>
-        <div class="form-group">
-            <label>Estado</label>
-            <input  name="uf" type="text" id="uf" size="2"
-            value="{{ $fornecedor->uf }}">
 
+        <!-- Estado -->
+        <div class="form-group mb-3">
+            <label for="uf">Estado</label>
+            <input type="text" class="form-control" name="uf" id="uf" value="{{ $fornecedor->uf }}" required>
         </div>
-        <div class="mb-3">
-    <label for="status">Status</label>
-    <select class="custom-select" name="status" id="inputGroupSelect01">
-        <option value="" disabled {{ $fornecedor->status ? '' : 'selected' }}>Selecionar...</option>
-        <option value="ativo" {{ $fornecedor->status === 'ativo' ? 'selected' : '' }}>Ativo</option>
-        <option value="inativo" {{ $fornecedor->status === 'inativo' ? 'selected' : '' }}>Inativo</option>
-    </select>
-</div>
-        
 
-        <button type="submit" class="btn btn-primary">Atualizar dados do usuário </button>
+        <!-- Status do Fornecedor -->
+        <div class="form-group mb-3">
+            <label for="status">Status</label>
+            <select class="form-control" name="status" id="status">
+                <option value="ativo" {{ $fornecedor->status == 'ativo' ? 'selected' : '' }}>Ativo</option>
+                <option value="inativo" {{ $fornecedor->status == 'inativo' ? 'selected' : '' }}>Inativo</option>
+            </select>
+        </div>
+
+        <!-- Botão para Submeter o Formulário -->
+        <button type="submit" class="btn btn-primary">Atualizar</button>
     </form>
+
+    <!-- Exibição de Erros de Validação -->
+    @if ($errors->any())
+        <div class="alert alert-danger mt-3">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+  </div>
 </div>
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
 
 @endsection

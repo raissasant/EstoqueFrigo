@@ -1,143 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Painel Administrativo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Painel Administrativo</title>
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-  <!-- IonIcons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Theme style -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Inclui estilos Bootstrap e AdminLTE -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-  <link rel="stylesheet" href="dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js">
-  </script>
-    <!-- Código JQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-            crossorigin="anonymous"></script>
-
-    <!-- Código Javascript -->
+    <!-- API de ViaCEP para preenchimento automático -->
     <script>
-
         $(document).ready(function() {
-
-            function limpa_formulário_cep() {
-                // Limpa valores do formulário de cep.
-                $("#rua").val("");
-                $("#bairro").val("");
-                $("#cidade").val("");
-                $("#uf").val("");
-
-            }
-
-            //Quando o campo cep perde o foco.
             $("#cep").blur(function() {
-
-                //Nova variável "cep" somente com dígitos.
                 var cep = $(this).val().replace(/\D/g, '');
-
-                //Verifica se campo cep possui valor informado.
                 if (cep != "") {
-
-                    //Expressão regular para validar o CEP.
                     var validacep = /^[0-9]{8}$/;
-
-                    //Valida o formato do CEP.
                     if(validacep.test(cep)) {
-
-                        //Preenche os campos com "..." enquanto consulta webservice.
                         $("#rua").val("...");
                         $("#bairro").val("...");
                         $("#cidade").val("...");
                         $("#uf").val("...");
-
-
-                        //Consulta o webservice viacep.com.br/
                         $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
-
                             if (!("erro" in dados)) {
-                                //Atualiza os campos com os valores da consulta.
                                 $("#rua").val(dados.logradouro);
                                 $("#bairro").val(dados.bairro);
                                 $("#cidade").val(dados.localidade);
                                 $("#uf").val(dados.uf);
-
-                            } //end if.
-                            else {
-                                //CEP pesquisado não foi encontrado.
-                                limpa_formulário_cep();
+                            } else {
                                 alert("CEP não encontrado.");
                             }
                         });
-                    } //end if.
-                    else {
-                        //cep é inválido.
-                        limpa_formulário_cep();
+                    } else {
                         alert("Formato de CEP inválido.");
                     }
-                } //end if.
-                else {
-                    //cep sem valor, limpa formulário.
-                    limpa_formulário_cep();
                 }
             });
         });
-
     </script>
-
-
-  <!--Font Awesome---->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
 </head>
 
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <!-- Menu lateral fixo -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4" style="position: fixed; top: 0; bottom: 0; left: 0; z-index: 999; width: 250px;">
+        <a href="{{ route('homeAdmin') }}" class="brand-link">
+            <span class="brand-text font-weight-light">Painel do Administrador</span>
+        </a>
+        <div class="sidebar">
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <!-- Início -->
+                    <li class="nav-item">
+                        <a href="{{ route('homeAdmin') }}" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>Início</p>
+                        </a>
+                    </li>
 
-    <!--Menu lateral -->
+                    <!-- Usuários -->
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Usuários<i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('cadastro/user') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Adicionar um novo usuário</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('listagem/user') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Usuários cadastrados</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
-      @yield('content')
+                    <!-- Fornecedores -->
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-boxes"></i>
+                            <p>Fornecedores<i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('indexFornecedor') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Adicionar um novo fornecedor</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('listagemFornecedor') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Fornecedores cadastrados</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
+                    <!-- Produtos -->
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-box"></i>
+                            <p>Produtos<i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('cadastroProduto') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Adicionar um novo produto</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('ListagemProduto') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Produtos cadastrados</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
+                    <!-- Armazéns -->
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-warehouse"></i>
+                            <p>Armazéns<i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('cadastroArmazem') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Adicionar um novo armazém</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('ListagemArmazem') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Armazéns cadastrados</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
+                    <!-- Botão de Logout -->
+                    <li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button class="btn btn-danger w-100" type="submit">
+                                <i class="fas fa-sign-out-alt"></i> Sair
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
 
-
-
-
-
-
-
-  <!-- Main Footer -->
-  <footer class="main-footer">
-    <strong> <a href="https://adminlte.io" class="text-danger">Gestão de estoque frigorífico</a>.</strong>
-
-    <div class="float-right d-none d-sm-inline-block">
-      <b class="text-danger">Versão</b>2.0
+    <!-- Conteúdo principal ao lado do menu lateral -->
+    <!--<div class="wrapper" style="display: flex;">--> ,  <!-- Conteúdo PARA DEIXAR FORMULARIOS PEQUENOS -->
+    <div class="" style="margin-left: 0px; padding: 0px;">
+        @yield('content')
     </div>
-  </footer>
 </div>
 
-
-<!-- REQUIRED SCRIPTS -->
+<!-- Scripts Necessários -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-
-<!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE -->
-<script src="dist/js/adminlte.js"></script>
-
-<!-- OPTIONAL SCRIPTS -->
-<script src="plugins/chart.js/Chart.min.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="dist/js/pages/dashboard3.js"></script>
 </body>
 </html>

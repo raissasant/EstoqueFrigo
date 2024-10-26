@@ -1,111 +1,73 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\ResertSenhaController;
 use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ArmazemController;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+use App\Http\Controllers\ResertSenhaController; // Controlador para redefinição de senha
 
-//http://127.0.0.1:8000
-//http://127.0.0.1:8000/login
-//http://127.0.0.1:8000/admin #--Para salvar o admin que esta no AdminController --#
-//http://127.0.0.1:8000/homeAdmin
-//http://127.0.0.1:8000/cadastro/user
-//http://127.0.0.1:8000/login/usuario #-- Usuário fazer o login --#
-//http://127.0.0.1:8000
-//http://127.0.0.1:8000/editar/fornecedor/{id}
-//http://127.0.0.1:8000/cadastro/fornecedor
-//http://127.0.0.1:8000/listagem/produto
-//http://127.0.0.1:8000/cadastro/produto
-//http://127.0.0.1:8000
-
-
+############################## Rotas Públicas ##############################
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome'); // Página inicial pública
 });
 
-####################### //----- Rotas do Administrador ----\\ ####################
+######################### Rotas de Autenticação ############################
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login'); // Exibe o formulário de login
+Route::post('/logando', [LoginController::class, 'login'])->name('logando'); // Processa o login para ambos (admin e usuários)
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout'); // Logout unificado para ambos
 
-Route::get('/login',[AdminController::class, 'login'])->name('login'); # -- Login do admin --#
-Route::get('/admin',[AdminController::class, 'store'])->name('admin'); #--Para salvar o admin --#
-Route::post('/logando',[AdminController::class, 'loginUpdate'])->name('logando');
-Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+########################### Rotas de Recuperação de Senha ##########################
+Route::get('/nova/senha', [ResertSenhaController::class, 'NovaSenha'])->name('senha'); // Exibe o formulário para redefinir senha
+Route::post('/enviando', [ResertSenhaController::class, 'PedirSenha'])->name('enviandoSenha'); // Processa o envio do e-mail de redefinição de senha
 
+########################### Rotas do Administrador ##########################
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('homeAdmin'); // Painel de controle do administrador
 
-//----Página Home do Administrador-----\\\
-Route::get('/homeAdmin',[AdminController::class, 'index'])->name('homeAdmin');
-
-##########################- Rota de Resert Password #################################
-
-# --- Resert senha do Administrador e Usuário ------#
-Route::get('/nova/senha', [ResertSenhaController::class, 'NovaSenha'])->name('senha');
-Route::post('/enviando',[ResertSenhaController::class, 'PedirSenha'])->name('enviandoSenha');
-//- Fim da rota Resert Senha do Administrador e Usuário --\\
-############################################################################################
-
-
-
-###################### //----- Rotas do usuario ----\\ ####################################
-//--Login  e logout do usuário --\\
-Route::get('/login/usuario', [UsuarioController::class, 'loginUser'])->name('login-user');
-Route::post('/logando/usuario', [UsuarioController::class, 'logandoUser'])->name('logandoUser');
-Route::post('logout/usuario',[UsuarioController::class, 'logout'])->name('logoutUser');
-//-- Fim --//
-
-
-
-// -- CRUD do Usuário --\\
+   // -- CRUD do Usuário --\\
 Route::get('/cadastro/user',[UsuarioController::class, 'index'])->name('cadastro/user');
 Route::post('/cadastrando/user',[UsuarioController::class, 'store'])->name('cadastrando/user');
 Route::get('/listagem/user',[UsuarioController::class, 'listagemUser'])->name('listagem/user');
 Route::get('/editar/user/{id}', [UsuarioController::class, 'editUsuario'])->name('editar.usuario');
-Route::put('/atualizar/user/{id}', [UsuarioController::class, 'atualizarUsuario'])->name('atualizar.usuario');
+Route::post('/atualizar/user/{id}', [UsuarioController::class, 'atualizarUsuario'])->name('atualizar.usuario');
 Route::get('/deletar/user/{id}', [UsuarioController::class, 'destroy'])->name('deletar.usuario');
 // --Fim do  CRUD do Usuário --\\
+    # -- CRUD de Fornecedores (somente administradores) -- #
+    Route::get('/cadastro/fornecedor', [FornecedorController::class, 'indexFornecedor'])->name('indexFornecedor'); // Exibe o formulário de cadastro de fornecedor
+    Route::post('/cadastrando/fornecedor', [FornecedorController::class, 'storeFornecedor'])->name('storeFornecedor'); // Processa o cadastro de fornecedor
+    Route::get('/listagem/fornecedor', [FornecedorController::class, 'listagemFornecedor'])->name('listagemFornecedor'); // Lista todos os fornecedores
+    Route::get('/editar/fornecedor/{id}', [FornecedorController::class, 'EditFornecedor'])->name('EditFornecedor'); // Exibe o formulário de edição de fornecedor
+    Route::post('/editando/fornecedor/{id}', [FornecedorController::class, 'AtualizandoFornecedor'])->name('atualizandoFornecedor'); // Processa a atualização de fornecedor
+    Route::delete('/deletar/fornecedor/{id}', [FornecedorController::class, 'DeleteFornecedor'])->name('deleteFornecedor'); // Exclui um fornecedor
+    Route::get('/fornecedores/search', [FornecedorController::class, 'searchFornecedores'])->name('searchFornecedores'); // Busca fornecedores
+});
 
+########################### Rotas Compartilhadas entre Administrador e Usuário Comum ##########################
+// Rotas para CRUD de Produtos
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cadastro/produto', [ProdutoController::class, 'TelaProduto'])->name('cadastroProduto'); // Exibe o formulário de cadastro de produto
+    Route::post('/cadastrando/produto', [ProdutoController::class, 'storeProduto'])->name('storeProduto'); // Processa o cadastro de produto
+    Route::get('/listagem/produto', [ProdutoController::class, 'listagemProduto'])->name('ListagemProduto'); // Lista todos os produtos
+    Route::get('/atualizar/produto/{id}', [ProdutoController::class, 'editProduto'])->name('editProduto'); // Exibe o formulário de edição de produto
+    Route::post('/editando/produto/{id}', [ProdutoController::class, 'atualizandoProduto'])->name('atualizandoProduto'); // Processa a atualização de produto
+    Route::delete('/produtos/{id}', [ProdutoController::class, 'deleteProduto'])->name('deleteProduto'); // Exclui um produto
+    Route::get('/produto/search', [ProdutoController::class, 'SearchProduto'])->name('SearchProduto'); // Busca produtos
+});
 
-// ---- Tela home do usuário ---\\
-Route::get('/home/usuario',[UsuarioController::class, 'homeUsuario'])->name('homeUsuario');
-
-
-# ----- Fornecedores ------- #
-Route::get('cadastro/fornecedor', [FornecedorController::class, 'indexFornecedor'])->name('indexFornecedor');
-Route::post('cadastrando/fornecedor',[FornecedorController::class, 'storeFornecedor'])->name('storeFornecedor');
-Route::get('/listagem/fornecedor',[FornecedorController::class, 'listagemFornecedor'])-> name('listagemFornecedor');
-Route::get('editar/fornecedor/{id}',[FornecedorController::class, 'EditFornecedor'])->name('EditFornecedor');
-Route::post('editando/fornecedor/{id}',[FornecedorController::class, 'AtualizandoFornecedor'])->name('AtualizandoFornecedor');
-// --- Pesquisar fornecedores
-Route::get('fornecedores/search', [FornecedorController::class, 'searchFornecedores'])->name('searchFornecedores');
-
-Route::get('/deletar/fornecedor/{id}',[FornecedorController::class, 'DeleteFornecedor'])->name('DeleteFornecedor');
-
-///-- Produtos --\\
-
-Route::get('/cadastro/produto',[ProdutoController::class, 'TelaProduto'])->name('cadastroProduto');
-Route::post('/cadastrando/produto',[ProdutoController::class, 'storeProduto'])->name('storeProduto');
-Route::get('/listagem/produto',[ProdutoController::class, 'ListagemProduto'])->name('ListagemProduto');
-Route::get('/atualizar/produto/{id}',[ProdutoController::class, 'editProduto'])->name('editProduto');
-Route::post('editando/produto/{id}',[ProdutoController::class, 'AtualizandoProduto'])->name('atualizandoProduto');
-Route::delete('/produtos/{id}', [ProdutoController::class, 'deleteProduto'])->name('deleteProduto');
-Route::get('/produto/search', [ProdutoController::class, 'SearchProduto'])->name('SearchProduto');
-
-///- Armazém --\\
-
-Route::get('/cadastro/armazem',[ArmazemController::class, 'TelaArmazem'])->name('cadastroArmazem');
-Route::post('/cadastrando/armazem',[ArmazemController::class, 'storeArmazem'])->name('storeArmazem');
-Route::get('/armazens', [ArmazemController::class, 'ListagemArmazem'])->name('ListagemArmazem');
-Route::get('/atualizar/armazem/{id}',[ArmazemController::class, 'editArmazem'])->name('editArmazem');
-Route::post('editando/armazem/{id}',[ArmazemController::class, 'AtualizandoArmazem'])->name('atualizandoArmazem');
-Route::delete('delete/armazem/{id}', [ArmazemController::class, 'deleteArmazem'])->name('deleteArmazem');
+// Rotas para CRUD de Armazéns
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cadastro/armazem', [ArmazemController::class, 'TelaArmazem'])->name('cadastroArmazem'); // Exibe o formulário de cadastro de armazém
+    Route::post('/cadastrando/armazem', [ArmazemController::class, 'storeArmazem'])->name('storeArmazem'); // Processa o cadastro de armazém
+    Route::get('/armazens', [ArmazemController::class, 'ListagemArmazem'])->name('ListagemArmazem'); // Lista todos os armazéns
+    Route::get('/atualizar/armazem/{id}', [ArmazemController::class, 'editArmazem'])->name('editArmazem'); // Exibe o formulário de edição de armazém
+    Route::post('/editando/armazem/{id}', [ArmazemController::class, 'AtualizandoArmazem'])->name('atualizandoArmazem'); // Processa a atualização de armazém
+    Route::delete('/delete/armazem/{id}', [ArmazemController::class, 'deleteArmazem'])->name('deleteArmazem'); // Exclui um armazém
+});
+########################### Rotas do Usuário Comum (Somente o Dashboard) ##########################
+Route::middleware(['auth'])->group(function () {
+    # -- Tela home do usuário comum -- #
+    Route::get('/home', [UsuarioController::class, 'homeUsuario'])->name('user.dashboard'); // Painel do usuário comum (tela protegida)
+});

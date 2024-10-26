@@ -3,126 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Admin;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\RateLimiter;
+use App\Models\User;
+use App\Models\Produto;
+use App\Models\Fornecedor;
+use App\Models\Armazem;
 
 class AdminController extends Controller
 {
-    // Mostrar a página de login
-    public function login()
-    {
-        return view('login');
-    }
-
-    //  Função para cadastrar um novo admin
-    public function store()
-    {
-        $admin = new Admin;
-        $admin->name = 'Seara';
-        $admin->email = 'seara@gmail.com';
-        $admin->password = bcrypt('123456');
-        $admin->save();
-
-        return "Admin salvo com sucesso!";
-    }
-
-################################################################################
-    // Função  para autenticar o administrador
-    public function loginUpdate(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
-
-        // Determinar o limite de tentativas do usuário
-        if (RateLimiter::tooManyAttempts($this->throttleKey($request), 4)) {
-            $seconds = RateLimiter::availableIn($this->throttleKey($request));
-
-        //Exibir a mensagem que o usuário excedeu o login e tem que esperar. A menssagem de erro está aqui
-        throw ValidationException::withMessages([
-            'email'=> [trans('auth.throttle', ['seconds' => $seconds])]
-          ]);
-
-}
-
-        if (Auth::guard('admins')->attempt($credentials)) {
-            $request->session()->regenerate();
-
-            // Visualiza  o usuário autenticado
-            $admin = Auth::guard('admins')->user();
-
-            // Definindo  as variáveis de sessão
-            $request->session()->put('admin_id', $admin->id);
-            $request->session()->put('user_name', $admin->name);
-            $request->session()->put('user_email', $admin->email);
-
-           // Limpar as tentativas após o login com as credenciais certas
-           RateLimiter::clear($this->throttleKey($request));
-
-            return redirect()->route('homeAdmin');
-        }
-
-          //Fazer a contagem de tentativas de falhas
-          RateLimiter::hit($this->throttleKey($request));
-
-
-        return redirect()->route('login')->withErrors(['email' => 'Credenciais inválidas, verifique novamente']);
-    }
-
-    protected function throttleKey(Request $request){
-        return strtolower($request->input('email')).'|' .$request->ip();
-    }
-
-
-#############################################################################
-    // Página do administrador
+    /**
+     * Método que exibe a página inicial do painel do administrador.
+     */
     public function index()
     {
-        $user = Auth::user();
-        $admin = Auth::guard('admins')->user();
+        // Contar o número de usuários e fornecedores
+        $contagemUser = User::count();  // Contar todos os usuários
+        $contagemFornecedor = Fornecedor::count();  // Contar todos os fornecedores
+        $contagemProduto = Produto::count();  // Contar todos os produtos
+        $contagemArmazem = Armazem::count();  // Contar todos os armazéns
 
-        //dd($admin);
-
-        // Buscar usuários associados ao admin logado
-         $users = $admin->users;
-         $fornecedores = $admin->fornecedores;
-
-        $ContagemFornecedor = $fornecedores->count();
-
-        $ContagemUser = $users->count();
-
-
-
-        return view('homeAdmin',['ContagemUser' => $ContagemUser, 'ContagemFornecedor' => $ContagemFornecedor]);
+        // Passar as contagens para a view do painel do administrador
+        return view('homeAdmin', [
+            'ContagemUser' => $contagemUser,
+            'ContagemFornecedor' => $contagemFornecedor,
+            'ContagemProduto' => $contagemProduto,
+            'ContagemArmazem' => $contagemArmazem,  // Adicionando contagem de armazéns
+        ]);
     }
-
-
-    // Função para logout
-  public function logout(Request $request)
-{
-    Auth::guard('admins')->logout();
-
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect()->route('login');
 }
-
-
-
-  public function show($id)
-{
-
-    $admin = Auth::guard('admins')->user();
-    $users = $admin->users;
-
-    $fornecedores = $admin->fornecedores;
-
-}
-
-
-}
-
-
-
-// Ges-Estoque

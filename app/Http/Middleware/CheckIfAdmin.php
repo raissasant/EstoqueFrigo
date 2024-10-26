@@ -1,18 +1,23 @@
 <?php
+namespace App\Http\Middleware;
+
+// app/Http/Middleware/CheckIfAdmin.php
 
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CheckIfAdmin
 {
-    public function handle(Request $request, Closure $next)
+    public function handle($request, Closure $next)
     {
-        if (auth()->check() && auth()->user()->isAdmin()) {
-            return $next($request); // Permite o acesso se o usuário for admin
+        // Permitir acesso se o usuário estiver autenticado
+        if (Auth::check()) {
+            return $next($request);
         }
 
-        return redirect('/login'); // Redireciona para a página inicial se o usuário não for admin
+        // Redirecionar para a página de login se não estiver autenticado
+        return redirect('/login')->with('error', 'Você precisa estar autenticado para acessar esta área.');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,17 +15,14 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('admin_id');
-            //$table->boolean('is_admin')->default(false);
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('cpf', 14)->unique();
-            $table->string('data_nascimento');
-
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
+            $table->string('name'); // Nome do usuário
+            $table->string('email')->unique(); // Email do usuário
+            $table->string('password')->nullable(false); // Senha criptografada
+            $table->string('cpf')->unique(); // CPF do usuário, valor único
+            $table->date('data_nascimento'); // Data de nascimento do usuário
+            $table->string('role')->default('user'); // Define o papel (user ou admin)
+            $table->rememberToken(); // Token de 'lembrar-me'
+            $table->timestamps(); // Timestamps padrão do Laravel (created_at, updated_at)
         });
     }
 
@@ -38,4 +35,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
     }
-};
+}
