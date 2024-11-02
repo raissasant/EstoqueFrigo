@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 @extends('paginas.base')
 @extends('paginas.nav')
+=======
+@extends('paginas.base') <!-- Mantém sua base existente -->
+@extends('paginas.nav') <!-- Inclui a sidebar existente -->
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
 
 @section('content')
+<div class="wrapper" style="display: flex;">
 
+<<<<<<< HEAD
 <div class="content" style="margin-left: 230px; padding: 10px; flex-grow: 1;">
     <form action="{{ route('SearchProduto') }}" method="GET">
         @csrf
@@ -32,8 +39,31 @@
     <br>
     <h1>Listagem de produtos</h1>
 
+=======
+  <!-- Conteúdo Principal -->
+  <div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1;">
+    <h1>Listagem de produtos</h1>
+    
+    <form action="{{ route('SearchProduto') }}" method="GET">
+      @csrf
+      <div class="mb-3">
+        <label for="search">Buscar produto</label>
+        <input type="text" class="form-control" name="search" id="search" placeholder="Digite o nome ou SKU">
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+    </form>
+
+    @if(isset($message))
+      <div class="alert alert-warning">
+        {{ $message }}
+      </div>
+    @endif
+
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
     <table class="table mt-3">
+      <thead>
         <tr>
+<<<<<<< HEAD
             <th>ID</th>
             <th>Nome</th>
             <th>Descrição</th>
@@ -45,8 +75,22 @@
             <th>Quantidade em estoque</th>
             <th>Qr Code</th>
             <th>Ações</th>
+=======
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th>SKU</th>
+          <th>Valor de compra(R$)</th>
+          <th>Valor de venda(R$)</th>
+          <th>Quantidade em estoque</th>
+          <th>Ações</th>
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
         </tr>
+      </thead>
+      <tbody>
         @foreach($produtos as $produto)
+<<<<<<< HEAD
             <tr>
                 <td>{{ $produto->id }}</td>
                 <td>{{ $produto->name }}</td>
@@ -70,9 +114,35 @@
                     </form>
                 </td>
             </tr>
+=======
+          <tr>
+            <td>{{ $produto->id }}</td>
+            <td>{{ $produto->name }}</td>
+            <td>{{ $produto->descricao }}</td>
+            <td>{{ $produto->categoria }}</td>
+            <td>{{ $produto->sku }}</td>
+            <td>{{ $produto->valor_compra }}</td>
+            <td>{{ $produto->valor_venda }}</td>
+            <td>{{ $produto->quantidade }}</td>
+            <td>
+              <a href="{{ route('editProduto', ['id' => $produto->id]) }}" class="btn btn-primary btn-sm mb-2" style="padding: 4px 8px; font-size: 0.875rem;">
+                <i class="fas fa-edit"></i> Editar
+              </a>
+              <form action="{{ route('deleteProduto', ['id' => $produto->id]) }}" method="POST" style="display: inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.875rem;" onclick="return confirm('Tem certeza que deseja excluir?');">
+                  <i class="fas fa-trash-alt"></i> Excluir
+                </button>
+              </form>
+            </td>
+          </tr>
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
         @endforeach
+      </tbody>
     </table>
 
+<<<<<<< HEAD
     <a href="{{ route('cadastroProduto') }}" class="btn btn-dark"><i class="fas fa-plus"></i> Cadastrar novo produto</a>
 
     <!-- Geração de QR Code -->
@@ -103,5 +173,10 @@
         margin-bottom: 5px; /* Espaçamento entre os botões */
     }
 </style>
+=======
+    <a href="{{ route('cadastroProduto') }}" class="btn btn-dark btn-sm"><i class="fas fa-plus"></i> Cadastrar novo produto</a>
+  </div>
+</div>
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
 
 @endsection

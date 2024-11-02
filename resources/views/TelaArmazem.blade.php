@@ -97,4 +97,8 @@ document.getElementById('cep').addEventListener('blur', function() {
     }
 });
 </script>
+<<<<<<< HEAD
 @endsection
+=======
+@endsection
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf

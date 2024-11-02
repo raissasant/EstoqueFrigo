@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 @extends('paginas.base') 
 @extends('paginas.nav')
+=======
+@extends('paginas.base') <!-- Mantém sua base existente -->
+@extends('paginas.nav') <!-- Inclui a sidebar existente -->
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
 
 @section('content')
 <div class="wrapper" style="display: flex;">
@@ -16,7 +21,11 @@
         <div class="card text-white bg-info h-100">
           <div class="card-body">
             <h5 class="card-title">Total de usuários</h5>
+<<<<<<< HEAD
             <p class="card-text">{{ $contagemUser }} usuário(s).</p>
+=======
+            <p class="card-text">{{ $ContagemUser }} usuário(s).</p>
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
             <a href="{{ route('listagem/user') }}" class="btn btn-light">Listagem de usuários</a>
           </div>
         </div>
@@ -27,18 +36,32 @@
         <div class="card text-white bg-success h-100">
           <div class="card-body">
             <h5 class="card-title">Total de fornecedores</h5>
+<<<<<<< HEAD
             <p class="card-text">{{ $contagemFornecedor }} fornecedor(es)</p>
             <a href="{{ route('listagemFornecedor') }}" class="btn btn-light">Lista de fornecedores</a>
+=======
+            <p class="card-text">{{ $ContagemFornecedor }} fornecedor(es)</p>
+            <a href="{{ route('listagemFornecedor') }}" class="btn btn-light">Listagem de fornecedores</a>
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
           </div>
         </div>
       </div>
 
+<<<<<<< HEAD
       <!-- Total de Produtos Cadastrados -->
       <div class="col-lg-3 col-md-6 mb-4">
         <div class="card text-white bg-warning h-100">
           <div class="card-body">
             <h5 class="card-title">Total de produtos </h5>
             <p class="card-text">{{ $contagemProduto }} produto(s).</p>
+=======
+      <!-- Total de Produtos -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card text-white bg-warning h-100">
+          <div class="card-body">
+            <h5 class="card-title">Total de produtos</h5>
+            <p class="card-text">{{ $ContagemProduto }} produto(s)</p>
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
             <a href="{{ route('ListagemProduto') }}" class="btn btn-light">Listagem de produtos</a>
           </div>
         </div>
@@ -49,6 +72,7 @@
         <div class="card text-white bg-danger h-100">
           <div class="card-body">
             <h5 class="card-title">Total de armazéns</h5>
+<<<<<<< HEAD
             <p class="card-text">{{ $contagemArmazem }} armazém(ns).</p>
             <a href="{{ route('ListagemArmazem') }}" class="btn btn-light">Listagem de armazéns</a>
           </div>
@@ -64,6 +88,12 @@
             <a href="{{ route('ListagemProduto') }}" class="btn btn-light">Ver todos os produtos</a>
           </div>
         </div>
+=======
+            <p class="card-text">{{ $ContagemArmazem }} armazém(ns)</p>
+            <a href="{{ route('ListagemArmazem') }}" class="btn btn-light">Listagem de armazéns</a>
+          </div>
+        </div>
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
       </div>
     </div>
 
@@ -71,6 +101,10 @@
 
     <!-- Gráficos de Controle de Estoque -->
     <div class="row">
+<<<<<<< HEAD
+=======
+      <!-- Gráfico de Controle de Estoque por Armazém -->
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
       <div class="col-lg-6">
         <div class="card">
           <div class="card-header">
@@ -78,10 +112,13 @@
           </div>
           <div class="card-body">
             <canvas id="stockChart" width="400" height="200"></canvas>
+<<<<<<< HEAD
             <!-- Mensagem de aviso, exibida apenas se não houver dados no gráfico -->
             <div id="noArmazemData" class="alert alert-warning" style="display: none;">
               Não há armazéns para exibir no gráfico de controle de estoque.
             </div>
+=======
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
           </div>
         </div>
       </div>
@@ -106,6 +143,7 @@
 
 <!-- Script para gerar o gráfico dos armazéns -->
 <script>
+<<<<<<< HEAD
 // Dados para o gráfico de armazéns
 // Dados para o gráfico de armazéns
 var armazemData = {!! json_encode($estoquePorArmazem) !!}; // Dados de estoque por armazém e produto
@@ -210,6 +248,52 @@ new Chart(ctx, {
         backgroundColor: productColors,
         borderColor: productColors.map(color => color.replace('0.2', '1')),
         borderWidth: 1
+=======
+  var ctx = document.getElementById('stockChart').getContext('2d');
+  var stockChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Armazém 1', 'Armazém 2', 'Armazém 3'], // Substitua pelos nomes reais
+      datasets: [{
+        label: 'Produtos em Estoque',
+        data: [120, 150, 180], // Exemplo de dados (substitua pelos dados reais)
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(54, 162, 235, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+
+<!-- Script para gerar o gráfico de produtos -->
+<script>
+  var ctxProducts = document.getElementById('productsChart').getContext('2d');
+  var productsChart = new Chart(ctxProducts, {
+    type: 'line',
+    data: {
+      labels: ['Produto A', 'Produto B', 'Produto C'], // Substitua pelos nomes reais
+      datasets: [{
+        label: 'Quantidade em Estoque',
+        data: [50, 100, 75], // Exemplo de dados (substitua pelos dados reais)
+        fill: false,
+        borderColor: 'rgba(75, 192, 192, 1)',
+        tension: 0.1
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
       }]
     },
     options: {

@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\User;
 use App\Models\Armazem;
 use App\Models\Movimentacao;
 use Auth;
 use Illuminate\Validation\ValidationException;
+
+
+
 
 class ArmazemController extends Controller
 {
@@ -54,6 +58,9 @@ class ArmazemController extends Controller
     {
         $user = Auth::user();
 
+
+
+        // Verifica se o usuário logado é admin ou comum e lista os armazéns de acordo
         $armazens = $user->role === 'admin' ? Armazem::all() : $user->armazens;
 
         return view('ListagemArmazem', ['armazens' => $armazens]);
@@ -63,7 +70,11 @@ class ArmazemController extends Controller
     {
         $user = Auth::user();
 
+
         $armazem = $user->role === 'admin' ? Armazem::findOrFail($id) : $user->armazens()->findOrFail($id);
+
+        $armazem = $user->armazens()->findOrFail($id);
+
 
         return view('editArmazem', ['armazem' => $armazem]);
     }
@@ -84,6 +95,8 @@ class ArmazemController extends Controller
         ]);
 
         $user = Auth::user();
+        $armazem = $user->armazens()->findOrFail($id);
+
 
         $armazem = $user->role === 'admin' ? Armazem::findOrFail($id) : $user->armazens()->findOrFail($id);
 
@@ -92,7 +105,45 @@ class ArmazemController extends Controller
         ]));
 
         return redirect()->route('ListagemArmazem')->with('success', 'Armazém atualizado com sucesso.');
+
+        if ($request->filled('name')) {
+            $armazem->name = $request->input('name');
+        }
+        if ($request->filled('cep')) {
+            $armazem->cep = $request->input('cep');
+        }
+        if ($request->filled('rua')) {
+            $armazem->rua = $request->input('rua');
+        }
+        if ($request->filled('complemento')) {
+            $armazem->complemento = $request->input('complemento');
+        }
+        if ($request->filled('bairro')) {
+            $armazem->bairro = $request->input('bairro');
+        }
+        if ($request->filled('cidade')) {
+            $armazem->cidade = $request->input('cidade');
+        }
+        if ($request->filled('uf')) {
+            $armazem->uf = $request->input('uf');
+        }
+        if ($request->filled('capacidade_total')) {
+            $armazem->capacidade_total = $request->input('capacidade_total');
+        }
+        if ($request->filled('espaco_disponivel')) {
+            $armazem->espaco_disponivel = $request->input('espaco_disponivel');
+        }
+        if ($request->filled('status')) {
+            $armazem->status = $request->input('status');
+        }
+
+        $armazem->save();
+
+        return redirect()->route('ListagemArmazem');
+
     }
+
+    
 
 
     public function deleteArmazem($id)
@@ -100,6 +151,7 @@ class ArmazemController extends Controller
         $user = Auth::user();
 
         $armazem = $user->role === 'admin' ? Armazem::findOrFail($id) : $user->armazens()->findOrFail($id);
+
 
         if ($armazem) {
             $armazem->delete();

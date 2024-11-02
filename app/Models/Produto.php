@@ -9,11 +9,13 @@ class Produto extends Model
     // Especificando o nome da tabela personalizada no banco de dados
     protected $table = '_produtos';
 
+
     // Permite a atribuição em massa para essas colunas
     protected $fillable = [
         'name', 'descricao', 'codigo_produto', 'valor_compra', 'valor_venda', 
         'altura', 'largura', 'peso', 'categoria', 'quantidade'
     ];
+
 
     /**
      * Relacionamento: um produto pertence a um usuário

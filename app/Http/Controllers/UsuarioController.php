@@ -110,8 +110,13 @@ class UsuarioController extends Controller
     public function homeUsuario()
     {
         $user = auth()->user(); // Usuário autenticado
+
         $produtos = $user->produtos; // relacionamento produtos 
         $armazens = $user->armazens; // o relacionamento armazens 
+
+        $produtos = $user->produtos; // Supondo que o relacionamento produtos esteja configurado
+        $armazens = $user->armazens; // Supondo que o relacionamento armazens esteja configurado
+
 
         $ContagemProdutos = $produtos->count();
         $ContagemArmazens = $armazens->count();
@@ -121,4 +126,6 @@ class UsuarioController extends Controller
             'ContagemArmazens' => $ContagemArmazens,
         ]);
     }
+
 }
+

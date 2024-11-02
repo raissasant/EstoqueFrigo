@@ -67,4 +67,7 @@ class LoginController extends Controller
         // Redireciona para a página de login
         return redirect('/login');
     }
+
 }
+
+

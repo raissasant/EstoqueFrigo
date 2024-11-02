@@ -129,4 +129,7 @@ class FornecedorController extends Controller
 
         return view('listagemFornecedor', ['fornecedores' => $fornecedores]);
     }
+
 }
+
+

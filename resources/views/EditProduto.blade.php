@@ -48,6 +48,21 @@
       </div>
       <button type="submit" class="btn btn-primary">Atualizar dados do produto</button>
     </form>
+<<<<<<< HEAD
+=======
+
+    @if ($errors->any())
+      <div class="alert alert-danger">
+        <ul>
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+  </div>
+</div>
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
 
     @if ($errors->any())
       <div class="alert alert-danger">

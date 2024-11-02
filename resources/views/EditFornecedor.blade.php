@@ -80,6 +80,22 @@
         <!-- Botão para Submeter o Formulário -->
         <button type="submit" class="btn btn-primary">Atualizar</button>
     </form>
+<<<<<<< HEAD
+
+    <!-- Exibição de Erros de Validação -->
+    @if ($errors->any())
+        <div class="alert alert-danger mt-3">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+  </div>
+</div>
+=======
+>>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
 
     <!-- Exibição de Erros de Validação -->
     @if ($errors->any())

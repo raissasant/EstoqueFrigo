@@ -1,4 +1,7 @@
 <?php
+namespace App\Http\Middleware;
+
+// app/Http/Middleware/CheckIfAdmin.php
 
 
 

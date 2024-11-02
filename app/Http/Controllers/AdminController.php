@@ -7,8 +7,11 @@ use App\Models\User;
 use App\Models\Produto;
 use App\Models\Fornecedor;
 use App\Models\Armazem;
+ 
 use App\Models\Movimentacao;
 use DB;
+
+
 
 class AdminController extends Controller
 {
@@ -17,6 +20,7 @@ class AdminController extends Controller
      */
     public function index()
     {
+
         $contagemUser = User::count();
         $contagemFornecedor = Fornecedor::count();
         $contagemProduto = Produto::count();
@@ -42,7 +46,12 @@ class AdminController extends Controller
             'estoquePorArmazem' => $estoquePorArmazem,
             'estoquePorProduto' => $estoquePorProduto,
             'totalProdutosEmEstoque' => $totalProdutosEmEstoque,
+
+        
         ]);
+        
     }
     
 }
+
+    

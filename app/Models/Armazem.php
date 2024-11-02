@@ -9,6 +9,7 @@ class Armazem extends Model
 {
     use HasFactory;
 
+
     protected $table = '_armazens';
 
     // Campos permitidos para atribuição em massa
@@ -25,6 +26,11 @@ class Armazem extends Model
         'status',
         'user_id'
     ];
+
+
+    // Especificando o nome da tabela no banco de dados
+    protected $table = '_armazens';
+
 
     /**
      * Relacionamento: um armazém pertence a um usuário
