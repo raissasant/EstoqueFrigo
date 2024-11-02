@@ -1,78 +1,100 @@
-@extends('paginas.base')
-
-@extends('paginas.navUser')
+@extends('paginas.base') <!-- Mantém sua base existente -->
+@extends('paginas.nav') <!-- Inclui a sidebar existente -->
 
 @section('content')
+<div class="wrapper" style="display: flex;">
 
-
-
-<body>
-    <h1>Inserir novo armazém </h1>
+  <div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1;">
+    <h1>Cadastro de Armazém</h1>
     <br>
 
-    <form action="{{ route('storeArmazem')}}" method="POST">
+    <form action="{{ route('storeArmazem') }}" method="POST">
       @csrf
-    <div>
-      <div class="mb-3">
-        <label for="exampleFormControlInput1" class="form-label">Nome</label>
-        <input type="text" name ="name" class="form-control" required id="exampleFormControlInput1" placeholder="Coloque o nome do armazém">
-      </div>
-      <div class="mb-3">
-      <label for="exampleFormControlInput1" class="form-label">Localização:</label>
-    </div>
-    <label>Cep: (insira o CEP e depois aperte a tecla TAB)
-        <input name="cep" type="text" id="cep" value="" size="10" maxlength="9" /></label><br />
-        <label>Rua:
-        <input name="rua" type="text" id="rua" size="60" /></label><br />
-        <label>Complemento: (se tiver)
-        <input name="complemento" type="text" id="complemento" size="60" /></label><br />
-        <label>Bairro:
-        <input name="bairro" type="text" id="bairro" size="40" /></label><br />
-        <label>Cidade:
-        <input name="cidade" type="text" id="cidade" size="40" /></label><br />
-        <label>Estado:
-        <input name="uf" type="text" id="uf" size="2" /></label><br/>
-      </div>
-
-      <div class="mb-3">
-      <label for="exampleFormControlInput1" class="form-label">Capacidade total</label>
-      <input type="text" class="form-control" name="capacidade_total"  required  id="exampleFormControlInput1" placeholder="Informe a capacidade total, coloque somente números inteiros">
-    </div>
-    <div class="mb-3">
-      <label for="exampleFormControlInput1" class="form-label">Espaço disponivel </label>
-      <input type="text" class="form-control" name="espaco_disponivel" required id="exampleFormControlInput1" placeholder="Informe o espaço disponivel, coloque somente números inteiros">
-    </div>
-      <div class="mb-3">
-      <label>Status</label>
-      <select class="custom-select" name = "status" id="inputGroupSelect01">
-        <option selected>Selecionar...</option>
-        <option value="ativo">Ativo</option>
-            <option value="inativo">Inativo</option>
-        </select>
+      <div>
+        <!-- Nome do Armazém -->
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome do Armazém</label>
+          <input type="text" name="name" class="form-control" id="nome" placeholder="Informe o nome do armazém" required>
         </div>
 
+        <!-- CEP -->
+        <div class="mb-3">
+          <label for="cep" class="form-label">CEP</label>
+          <input type="text" class="form-control" name="cep" id="cep" placeholder="Informe o CEP" required>
+        </div>
 
+        <!-- Rua (sem readonly) -->
+        <div class="mb-3">
+          <label for="rua" class="form-label">Rua</label>
+          <input type="text" name="rua" class="form-control" id="rua" placeholder="Rua">
+        </div>
 
-<button  type="submit" class="btn btn-success">Salvar armazém</button>
-<button  type="reset" class="btn  btn-dark">Cancelar cadastro de armazém</button>
+        <!-- Bairro -->
+        <div class="mb-3">
+          <label for="bairro" class="form-label">Bairro</label>
+          <input type="text" name="bairro" class="form-control" id="bairro" placeholder="Bairro">
+        </div>
 
+        <!-- Cidade -->
+        <div class="mb-3">
+          <label for="cidade" class="form-label">Cidade</label>
+          <input type="text" class="form-control" name="cidade" id="cidade" placeholder="Cidade" readonly>
+        </div>
+
+        <!-- Estado -->
+        <div class="mb-3">
+          <label for="uf" class="form-label">Estado</label>
+          <input type="text" class="form-control" name="uf" id="uf" placeholder="Estado" readonly>
+        </div>
+
+        <!-- Capacidade de Armazenamento -->
+        <div class="mb-3">
+          <label for="capacidade_total" class="form-label">Capacidade de Armazenamento (m³)</label>
+          <input type="text" class="form-control" name="capacidade_total" id="capacidade_total" placeholder="Informe a capacidade em metros cúbicos" required>
+        </div>
+
+        <!-- Espaço Disponível -->
+        <div class="mb-3">
+          <label for="espaco_disponivel" class="form-label">Espaço Disponível</label>
+          <input type="text" class="form-control" name="espaco_disponivel" id="espaco_disponivel" placeholder="Informe o espaço disponível" required>
+        </div>
+
+        <!-- Status do Armazém -->
+        <div class="mb-3">
+          <label for="status" class="form-label">Status</label>
+          <select class="form-control" name="status" id="status" required>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+
+        <!-- Botões de Ação -->
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <button type="reset" class="btn btn-dark">Cancelar</button>
+      </div>
+    </form>
   </div>
-  </form>
-  @if ($errors->any())
-      <div class="alert alert-danger">
-          <ul>
-              @foreach ($errors->all() as $error)
-                  <li>{{ $error }}</li>
-              @endforeach
-          </ul>
-      </div>
-  @endif
+</div>
 
-
-      </div>
-
-  </body>
-
-
-
+<!-- JavaScript para API ViaCEP -->
+<script>
+document.getElementById('cep').addEventListener('blur', function() {
+    const cep = this.value.replace(/\D/g, '');
+    if (cep) {
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.erro) {
+                    // Apenas preenche automaticamente bairro, cidade e estado
+                    document.getElementById('bairro').value = data.bairro;
+                    document.getElementById('cidade').value = data.localidade;
+                    document.getElementById('uf').value = data.uf;
+                } else {
+                    alert('CEP não encontrado.');
+                }
+            })
+            .catch(error => console.error('Erro ao buscar o CEP:', error));
+    }
+});
+</script>
 @endsection

@@ -2,19 +2,19 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Armazem;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Armazem[] $armazens
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -22,6 +22,7 @@ class User extends Authenticatable
         'password',
         'cpf',
         'data_nascimento',
+        'role', // Adiciona 'role' para distinguir admins de usuários comuns
     ];
 
     /**
@@ -43,19 +44,18 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function admin(){
-
-        return $this->belongsTo(Admin::class, 'admin_id');
-
-    }
-
     public function produtos()
     {
         return $this->hasMany(Produto::class, 'user_id');
     }
 
     public function armazens()
-{
-    return $this->hasMany(Armazem::class, 'user_id');
-}
+    {
+        return $this->hasMany(Armazem::class);
+    }
+
+    public function movimentacoes()
+    {
+        return $this->hasMany(Movimentacao::class);
+    }
 }

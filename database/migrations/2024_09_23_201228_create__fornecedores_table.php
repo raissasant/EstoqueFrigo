@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('_fornecedores', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('admin_id');
+            $table->unsignedBigInteger('user_id'); // Adicionando a coluna user_id
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); // Chave estrangeira
             $table->string('name');
-            $table->string('cnpj', 14)->unique();
+            $table->string('cnpj', 18)->unique();
             $table->string('cpf', 14)->unique()->nullable();
             $table->string('telefone');
             $table->string('cep');

@@ -1,26 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Solicitar nova senha</title>
+    <title>Solicitação de Nova Senha</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-	<h1>Solicitar nova senha</h1>
-  <form action="{{ route('enviandoSenha') }}" method="POST">
-  @csrf
-  <div class="mb-3">
-  <label for="exampleFormControlInput1" class="form-label">Nome completo</label>
-  <input type="text" class="form-control" name="name" id="exampleFormControlInput1" placeholder="Nome completo">
-</div>
-<br>
-<div class="mb-3">
-  <label for="exampleFormControlTextarea1" class="form-label">Mensagem</label>
-  <textarea class="form-control" name = "mensagem" id="exampleFormControlTextarea1" rows="3"></textarea>
-</div>
-<button  type="submit" class="btn btn-dark">Enviar</button>
+    <div class="container mt-5">
+        <h1>Solicitar Nova Senha</h1>
 
+        <!-- Exibe mensagem de sucesso após envio do formulário -->
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
+        <!-- Exibe erros de validação, se houver -->
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
+        <!-- Formulário para solicitar nova senha -->
+        <form method="POST" action="{{ route('enviandoSenha') }}">
+            @csrf  <!-- Token CSRF para segurança -->
+            
+            <!-- Campo para inserir o e-mail -->
+            <div class="form-group">
+                <label for="email">Seu E-mail</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="Digite seu e-mail" required>
+            </div>
+
+            <!-- Campo para inserir a mensagem -->
+            <div class="form-group">
+                <label for="mensagem">Mensagem</label>
+                <textarea name="mensagem" id="mensagem" class="form-control" rows="4" placeholder="Digite sua mensagem" required></textarea>
+            </div>
+
+            <!-- Botão de submissão -->
+            <button type="submit" class="btn btn-primary">Enviar Solicitação</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js e jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

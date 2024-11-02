@@ -8,30 +8,33 @@ use App\Mail\FormularioMail;
 
 class ResertSenhaController extends Controller
 {
+    // Exibe a view para solicitar nova senha
     public function NovaSenha()
     {
-        // Tela para pedir nova senha
-        return view('resertPassword');
+        return view('resertPassword'); // Renderiza a view do formulário
     }
 
+    // Lida com o envio de e-mail após a solicitação
     public function PedirSenha(Request $request)
     {
-        
+        // Valida os campos do formulário com mensagens personalizadas
         $request->validate([
-            'name' => 'required|string',
+            'email' => 'required|email',
             'mensagem' => 'required|string',
+        ], [
+            'email.required' => 'O campo email é obrigatório.',
+            'email.email' => 'Insira um endereço de email válido.',
+            'mensagem.required' => 'O campo mensagem é obrigatório.',
         ]);
 
-        //  Array de dados com as informações do formulário
-        $data = [
-            'name' => $request->name,
-            'mensagem' => $request->mensagem,
-        ];
+        // Captura os dados diretamente dos campos do formulário
+        $email = $request->input('email');
+        $mensagem = $request->input('mensagem');
 
-        // Envia o email com os dados
-        Mail::to(config('mail.from.address'))->send(new FormularioMail($data));
+        // Envia o e-mail com os dados capturados
+        Mail::to($email)->send(new FormularioMail($email, $mensagem));
 
-        // Retorna uma mensagem de  que a solicitação de nova senha foi um sucesso
-        return "Email enviado com sucesso";
+        // Retorna uma mensagem de sucesso após o envio do e-mail
+        return back()->with('success', 'E-mail enviado com sucesso!');
     }
 }

@@ -10,25 +10,24 @@ class FormularioMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data;
+    public $email;
+    public $mensagem;
 
-    /**
-     * Cria uma nova instância da mensagem.
-     *
-     * @param array $data
-     * @return void
-     */
-    public function __construct($data)
+    // Construtor que recebe os dados do formulário
+    public function __construct($email, $mensagem)
     {
-        $this->data = $data;
+        $this->email = $email;
+        $this->mensagem = $mensagem;
     }
 
+    // Método para montar o e-mail que será enviado
     public function build()
     {
-        return $this
-            ->from(config('mail.from.address'))
-            ->subject('Contato suporte Gestão Estoque')
-            ->view('emailsenha')
-            ->with('data', $this->data);  // Passa a variável $data para a visão
+        return $this->view('emailsenha')  // Usando a view emailsenha.blade.php
+                    ->subject('Solicitação de Troca de Senha')  // Título do e-mail
+                    ->with([
+                        'email' => $this->email,
+                        'mensagem' => $this->mensagem,
+                    ]);
     }
 }

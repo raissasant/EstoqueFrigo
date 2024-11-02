@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->unsignedBigInteger('user_id');  // Coluna user_id para associar com a tabela users
             $table->string('descricao');
+            $table->string('codigo_produto');
             $table->decimal('valor_compra', 10, 2);  // Valores monetários  "decimal"
             $table->decimal('valor_venda', 10, 2);
             $table->string('altura');

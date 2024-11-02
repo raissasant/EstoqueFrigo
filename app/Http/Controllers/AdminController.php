@@ -3,126 +3,46 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Admin;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\RateLimiter;
+use App\Models\User;
+use App\Models\Produto;
+use App\Models\Fornecedor;
+use App\Models\Armazem;
+use App\Models\Movimentacao;
+use DB;
 
 class AdminController extends Controller
 {
-    // Mostrar a página de login
-    public function login()
-    {
-        return view('login');
-    }
-
-    //  Função para cadastrar um novo admin
-    public function store()
-    {
-        $admin = new Admin;
-        $admin->name = 'Seara';
-        $admin->email = 'seara@gmail.com';
-        $admin->password = bcrypt('123456');
-        $admin->save();
-
-        return "Admin salvo com sucesso!";
-    }
-
-################################################################################
-    // Função  para autenticar o administrador
-    public function loginUpdate(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
-
-        // Determinar o limite de tentativas do usuário
-        if (RateLimiter::tooManyAttempts($this->throttleKey($request), 4)) {
-            $seconds = RateLimiter::availableIn($this->throttleKey($request));
-
-        //Exibir a mensagem que o usuário excedeu o login e tem que esperar. A menssagem de erro está aqui
-        throw ValidationException::withMessages([
-            'email'=> [trans('auth.throttle', ['seconds' => $seconds])]
-          ]);
-
-}
-
-        if (Auth::guard('admins')->attempt($credentials)) {
-            $request->session()->regenerate();
-
-            // Visualiza  o usuário autenticado
-            $admin = Auth::guard('admins')->user();
-
-            // Definindo  as variáveis de sessão
-            $request->session()->put('admin_id', $admin->id);
-            $request->session()->put('user_name', $admin->name);
-            $request->session()->put('user_email', $admin->email);
-
-           // Limpar as tentativas após o login com as credenciais certas
-           RateLimiter::clear($this->throttleKey($request));
-
-            return redirect()->route('homeAdmin');
-        }
-
-          //Fazer a contagem de tentativas de falhas
-          RateLimiter::hit($this->throttleKey($request));
-
-
-        return redirect()->route('login')->withErrors(['email' => 'Credenciais inválidas, verifique novamente']);
-    }
-
-    protected function throttleKey(Request $request){
-        return strtolower($request->input('email')).'|' .$request->ip();
-    }
-
-
-#############################################################################
-    // Página do administrador
+    /**
+     * Método que exibe a página inicial do painel do administrador.
+     */
     public function index()
     {
-        $user = Auth::user();
-        $admin = Auth::guard('admins')->user();
-
-        //dd($admin);
-
-        // Buscar usuários associados ao admin logado
-         $users = $admin->users;
-         $fornecedores = $admin->fornecedores;
-
-        $ContagemFornecedor = $fornecedores->count();
-
-        $ContagemUser = $users->count();
-
-
-
-        return view('homeAdmin',['ContagemUser' => $ContagemUser, 'ContagemFornecedor' => $ContagemFornecedor]);
+        $contagemUser = User::count();
+        $contagemFornecedor = Fornecedor::count();
+        $contagemProduto = Produto::count();
+        $contagemArmazem = Armazem::count();
+    
+        // Agrupa por armazém e produto para obter o nome do produto e a quantidade
+        $estoquePorArmazem = DB::table('produto_armazem')
+            ->join('_armazens', 'produto_armazem.armazem_name', '=', '_armazens.name')
+            ->join('_produtos', 'produto_armazem.produto_id', '=', '_produtos.id')
+            ->select('_armazens.name as armazem', '_produtos.descricao as produto', DB::raw('SUM(produto_armazem.quantidade) as total'))
+            ->groupBy('_armazens.name', '_produtos.descricao')
+            ->get()
+            ->groupBy('armazem'); // Agrupado por armazém para fácil acesso na view
+    
+        $estoquePorProduto = Produto::select('descricao', 'quantidade')->pluck('quantidade', 'descricao');
+        $totalProdutosEmEstoque = Produto::sum('quantidade');
+    
+        return view('homeAdmin', [
+            'contagemUser' => $contagemUser,
+            'contagemFornecedor' => $contagemFornecedor,
+            'contagemProduto' => $contagemProduto,
+            'contagemArmazem' => $contagemArmazem,
+            'estoquePorArmazem' => $estoquePorArmazem,
+            'estoquePorProduto' => $estoquePorProduto,
+            'totalProdutosEmEstoque' => $totalProdutosEmEstoque,
+        ]);
     }
-
-
-    // Função para logout
-  public function logout(Request $request)
-{
-    Auth::guard('admins')->logout();
-
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect()->route('login');
+    
 }
-
-
-
-  public function show($id)
-{
-
-    $admin = Auth::guard('admins')->user();
-    $users = $admin->users;
-
-    $fornecedores = $admin->fornecedores;
-
-}
-
-
-}
-
-
-
-// Ges-Estoque

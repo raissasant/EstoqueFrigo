@@ -1,83 +1,66 @@
 @extends('paginas.base')
-
-@extends('paginas.navUser')
+@extends('paginas.nav')
 
 @section('content')
-
-
-    <div class="container">
+<div class="container" style="margin-left: 250px; padding: 20px; max-width: 800px;">
     <h1>Editar e atualizar armazém</h1>
-    <form action="{{ route('atualizandoArmazem',['id' => $armazem->id]) }}" method="POST">
+    <form action="{{ route('atualizandoArmazem', ['id' => $armazem->id]) }}" method="POST">
         @csrf
         <div class="form-group">
-            <label for="nome">Nome</label>
+            <label for="name">Nome</label>
             <input type="text" class="form-control" name="name" id="name" value="{{ old('name', $armazem->name) }}">
         </div>
 
         <div class="form-group">
-            <label>CEP(insira o CEP e depois aperte a tecla TAB)</label>
-            <input  name="cep" type="text" id="cep" value="" size="10" maxlength="9"
-            value="{{ $armazem->cep}}">
-
+            <label>CEP</label>
+            <input name="cep" type="text" class="form-control" id="cep" value="{{ old('cep', $armazem->cep) }}" maxlength="9">
         </div>
+
         <div class="form-group">
             <label>Rua</label>
-            <input name="rua" type="text" id="rua" size="60"
-            value="{{ $armazem->rua}}">
-
+            <input name="rua" type="text" class="form-control" id="rua" value="{{ old('rua', $armazem->rua) }}">
         </div>
+
         <div class="form-group">
             <label>Complemento</label>
-            <input name="complemento" type="text" id="complemento" size="60"
-            value="{{ $armazem->complemento}}">
-
+            <input name="complemento" type="text" class="form-control" id="complemento" value="{{ old('complemento', $armazem->complemento) }}">
         </div>
+
         <div class="form-group">
-            <label >Bairro</label>
-            <input name="bairro" type="text" id="bairro" size="40"
-            value="{{$armazem->bairro }}">
-
+            <label>Bairro</label>
+            <input name="bairro" type="text" class="form-control" id="bairro" value="{{ old('bairro', $armazem->bairro) }}">
         </div>
+
         <div class="form-group">
-            <label for="date">Cidade</label>
-            <input name="cidade" type="text" id="cidade" size="40"
-            value="{{ $armazem->cidade }}">
-
+            <label>Cidade</label>
+            <input name="cidade" type="text" class="form-control" id="cidade" value="{{ old('cidade', $armazem->cidade) }}">
         </div>
+
         <div class="form-group">
             <label>Estado</label>
-            <input  name="uf" type="text" id="uf" size="2"
-            value="{{ $armazem->uf }}">
-
+            <input name="uf" type="text" class="form-control" id="uf" maxlength="2" value="{{ old('uf', $armazem->uf) }}">
         </div>
+
         <div class="form-group">
             <label>Capacidade total</label>
-            <input type="text" class="form-control" name="altura" id="altura" value="{{ old('capacidade_total', $armazem->capacidade_total) }}">
+            <input type="text" class="form-control" name="capacidade_total" id="capacidade_total" value="{{ old('capacidade_total', $armazem->capacidade_total) }}">
         </div>
+
         <div class="form-group">
             <label>Espaço disponível</label>
-            <input type="text" class="form-control" name="largura" id="largura" value="{{ old('espaco_disponivel', $armazem->espaco_disponivel) }}">
+            <input type="text" class="form-control" name="espaco_disponivel" id="espaco_disponivel" value="{{ old('espaco_disponivel', $armazem->espaco_disponivel) }}">
         </div>
-       <div class="mb-3">
-        <label for="status">Status</label>
-        <select class="custom-select" name="status" id="inputGroupSelect01">
-            <option value="" disabled {{ $armazem->status ? '' : 'selected' }}>Selecionar...</option>
-            <option value="ativo" {{ $armazem->status === 'ativo' ? 'selected' : '' }}>Ativo</option>
-            <option value="inativo" {{ $armazem->status === 'inativo' ? 'selected' : '' }}>Inativo</option>
-        </select>
-</div>
+
+        <div class="mb-3">
+            <label for="status">Status</label>
+            <select class="custom-select" name="status" id="inputGroupSelect01">
+                <option value="" disabled {{ $armazem->status ? '' : 'selected' }}>Selecionar...</option>
+                <option value="ativo" {{ $armazem->status === 'ativo' ? 'selected' : '' }}>Ativo</option>
+                <option value="inativo" {{ $armazem->status === 'inativo' ? 'selected' : '' }}>Inativo</option>
+            </select>
+        </div>
 
         <button type="submit" class="btn btn-primary">Atualizar dados do armazém</button>
     </form>
 </div>
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
 @endsection
