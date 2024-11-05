@@ -1,10 +1,10 @@
 @extends('paginas.base')
-@extends('paginas.nav')
+
 
 @section('content')
 
 <br>
-<div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1;">
+<div class="content" style="margin-left: 10px; padding: 20px; flex-grow: 1;">
     <h1>Lista de Movimentações</h1>
 
     @if(session('success'))

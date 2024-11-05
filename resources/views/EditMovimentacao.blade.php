@@ -1,11 +1,11 @@
 @extends('paginas.base')
-@extends('paginas.nav')
 
 @section('content')
 <div class="wrapper" style="display: flex;">
-  <div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1;">
+  <div class="content" style="margin-left: 10px; padding: 20px; flex-grow: 1;">
     <h1>Editar movimentação</h1>
     
+    <!-- Exibição de mensagens de sucesso ou erro -->
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -13,8 +13,11 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
+    <!-- Formulário de edição da movimentação -->
     <form action="{{ route('atualizandoMovimentacao', $movimentacao->id) }}" method="POST">
         @csrf
+        @method('POST') <!-- Utilizamos o método POST para atualização -->
+
         <div class="mb-3">
             <label for="quantidade" class="form-label">Quantidade</label>
             <input type="number" class="form-control" name="quantidade" id="quantidade" value="{{ $movimentacao->quantidade_mov }}" required>
@@ -70,6 +73,7 @@
   </div>
 </div>
 
+<!-- Script JavaScript para exibir campos de armazém conforme o tipo de movimentação -->
 <script>
     document.getElementById('tipo_mov').addEventListener('change', function() {
         const tipo = this.value;
@@ -91,6 +95,7 @@
         }
     });
 
+    // Gatilho inicial para exibir os campos corretos ao carregar a página
     document.getElementById('tipo_mov').dispatchEvent(new Event('change'));
 </script>
 @endsection

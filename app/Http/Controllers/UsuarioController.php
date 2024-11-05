@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Rules\Cpf; // Importação da regra personalizada de CPF
 use App\Models\User;
+use App\Models\Movimentacao;
 use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
@@ -111,21 +112,19 @@ class UsuarioController extends Controller
     {
         $user = auth()->user(); // Usuário autenticado
 
-        $produtos = $user->produtos; // relacionamento produtos 
-        $armazens = $user->armazens; // o relacionamento armazens 
+        $produtos = $user->produtos; // Relacionamento produtos 
+        $armazens = $user->armazens; // Relacionamento armazéns 
+        $movimentacoes = $user->movimentacoes; // Relacionamento movimentações
 
-        $produtos = $user->produtos; // Supondo que o relacionamento produtos esteja configurado
-        $armazens = $user->armazens; // Supondo que o relacionamento armazens esteja configurado
-
-
+        // Contagem dos produtos, armazéns e movimentações
         $ContagemProdutos = $produtos->count();
         $ContagemArmazens = $armazens->count();
+        $ContagemMovimentacao = $movimentacoes->count();
 
         return view('Usuario', [
             'ContagemProdutos' => $ContagemProdutos,
             'ContagemArmazens' => $ContagemArmazens,
+            'ContagemMovimentacao' => $ContagemMovimentacao,
         ]);
     }
-
 }
-

@@ -15,7 +15,7 @@ class FornecedorController extends Controller
         // Middleware para restringir o acesso a usuários com o papel 'admin'
         $this->middleware(function ($request, $next) {
             if (Auth::user()->role !== 'admin') {
-                return redirect()->route('home')->withErrors(['Você não tem permissão para acessar esta área.']);
+                return redirect()->route('homeUsuario')->withErrors(['Você não tem permissão para acessar esta área.']);
             }
             return $next($request);
         });

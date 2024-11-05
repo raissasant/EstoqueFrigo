@@ -1,8 +1,8 @@
 @extends('paginas.base')
-@extends('paginas.nav')
+
 
 @section('content')
-<div class="container" style="margin-left: 250px; padding: 20px; max-width: 800px;">
+<div class="container" style="margin-left: 10px; padding: 20px; max-width: 800px;">
     <h1>Consulta de Estoque</h1>
 
     @if($estoques->isEmpty())

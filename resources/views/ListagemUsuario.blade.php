@@ -1,25 +1,15 @@
 @extends('paginas.base') <!-- Mantém sua base existente -->
-<<<<<<< HEAD
-
-=======
-@extends('paginas.nav') <!-- Inclui a sidebar existente -->
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
 
 @section('content')
 <div class="wrapper" style="display: flex;">
 
   <!-- Conteúdo Principal -->
-<<<<<<< HEAD
-  <div class="content" style="margin-left: 220px; padding: 20px; flex-grow: 1;">
-=======
-  <div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1;">
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
-    <h1 class="mt-5">Lista de usuários</h1>
-                
+  <div class="content" style="margin-left: 10px; padding: 20px; flex-grow: 1;">
+    <h1 class="mt-5">Usuários Cadastrados</h1>
     <br>
 
     <table class="table table-bordered table-striped mt-3">
-      <thead class="thead-dark">
+      <thead style="background-color: #6c757d; color: #f8f9fa;"> <!-- Cor mais suave -->
         <tr>
           <th>ID</th>
           <th>Nome completo</th>
@@ -40,12 +30,14 @@
             <td>{{ $user->data_nascimento }}</td>
             <td>{{ $user->role === 'admin' ? 'Administrador' : 'Usuário Comum' }}</td>
             <td>
-              <a href="{{ route('editar.usuario', ['id' => $user->id]) }}" class="btn btn-primary"><i class="fas fa-edit"></i> Editar</a>
-              <form action="{{ route('deletar.usuario', ['id' => $user->id]) }}" method="DELETE" style="display:inline;">
-                @csrf
-                @method('DELETE') <!-- Adiciona o método DELETE -->
-                <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Excluir</button>
-              </form>
+              <div class="d-flex" style="gap: 10px;"> <!-- Maior espaçamento entre os botões -->
+                <a href="{{ route('editar.usuario', ['id' => $user->id]) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> Editar</a>
+                <form action="{{ route('deletar.usuario', ['id' => $user->id]) }}" method="POST" style="display:inline;">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Excluir</button>
+                </form>
+              </div>
             </td>
           </tr>
         @endforeach
@@ -58,8 +50,4 @@
 
 <!-- Scripts Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<<<<<<< HEAD
 @endsection
-=======
-@endsection
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf

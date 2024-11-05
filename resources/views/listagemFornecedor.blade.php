@@ -1,9 +1,9 @@
 @extends('paginas.base')
-@extends('paginas.nav')
+
 
 @section('content')
 <div class="wrapper" style="display: flex;">
-  <div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1;">
+  <div class="content" style="margin-left: 10px; padding: 20px; flex-grow: 1;">
     
     <form action="{{ route('searchFornecedores') }}" method="GET">
         @csrf
@@ -77,8 +77,6 @@
 
 <!-- Scripts Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<<<<<<< HEAD
+
 @endsection
-=======
-@endsection
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
+

@@ -1,11 +1,11 @@
 @extends('paginas.base')
-@extends('paginas.nav')
+
 
 @section('content')
 
 <div class="wrapper" style="display: flex;">
   <!-- Conteúdo Principal -->
-  <div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1;">
+  <div class="content" style="margin-left: 10px; padding: 20px; flex-grow: 1;">
     <h1>Armazéns cadastrados</h1>
 
     <table class="table table-hover mt-3">
@@ -13,7 +13,7 @@
         <tr>
           <th>ID</th>
           <th>Nome</th>
-          <th>Cidade</th> <!-- Nova coluna para a cidade -->
+          <th>Cidade</th> 
           <th>Capacidade total</th>
           <th>Espaço disponível</th>
           <th>Status</th>
@@ -25,7 +25,7 @@
           <tr>
             <td>{{ $armazem->id }}</td>
             <td>{{ $armazem->name }}</td>
-            <td>{{ $armazem->cidade }}</td> <!-- Exibindo o campo cidade -->
+            <td>{{ $armazem->cidade }}</td> 
             <td>{{ $armazem->capacidade_total }}</td>
             <td>{{ $armazem->espaco_disponivel }}</td>
             <td>
@@ -57,9 +57,5 @@
     </a>
   </div>
 </div>
+@endsection
 
-<<<<<<< HEAD
-@endsection
-=======
-@endsection
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf

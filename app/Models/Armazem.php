@@ -28,8 +28,6 @@ class Armazem extends Model
     ];
 
 
-    // Especificando o nome da tabela no banco de dados
-    protected $table = '_armazens';
 
 
     /**

@@ -8,11 +8,10 @@ use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ArmazemController;
 use App\Http\Controllers\ResertSenhaController; // Controlador para redefinição de senha
-<<<<<<< HEAD
 use App\Http\Controllers\MovimentacaoController;
-=======
 
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
+
+
 ############################## Rotas Públicas ##############################
 Route::get('/', function () {
     return view('welcome'); // Página inicial pública
@@ -70,7 +69,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/editando/armazem/{id}', [ArmazemController::class, 'AtualizandoArmazem'])->name('atualizandoArmazem'); // Processa a atualização de armazém
     Route::delete('/delete/armazem/{id}', [ArmazemController::class, 'deleteArmazem'])->name('deleteArmazem'); // Exclui um armazém
 });
-<<<<<<< HEAD
+
 
 /// -- Movimentação --\\
 Route::middleware(['auth'])->group(function () {
@@ -88,10 +87,4 @@ Route::middleware(['auth'])->group(function () {
     # -- Tela home do usuário comum -- #
     Route::get('/home', [UsuarioController::class, 'homeUsuario'])->name('homeUsuario'); // Painel do usuário comum (tela protegida)
 });
-=======
-########################### Rotas do Usuário Comum (Somente o Dashboard) ##########################
-Route::middleware(['auth'])->group(function () {
-    # -- Tela home do usuário comum -- #
-    Route::get('/home', [UsuarioController::class, 'homeUsuario'])->name('user.dashboard'); // Painel do usuário comum (tela protegida)
-});
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
+

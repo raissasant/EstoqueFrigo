@@ -125,9 +125,9 @@ class MovimentacaoController extends Controller
         $movimentacao->user_id = $user->id;
         $movimentacao->name_user = $request->input('name_user');
         $movimentacao->codigo_produto = $request->input('codigo_produto');
-        $movimentacao->codigo_entrada = $request->input('codigo_entrada', ''); // ou um valor padrão
-        $movimentacao->codigo_saida = $request->input('codigo_saida', ''); // Ou um valor padrão, como uma string vazia
-        $movimentacao->codigo_pedido = $request->input('codigo_pedido', ''); // Ou um valor padrão, como uma string vazia
+        $movimentacao->codigo_entrada = $request->input('codigo_entrada', ''); 
+        $movimentacao->codigo_saida = $request->input('codigo_saida', ''); 
+        $movimentacao->codigo_pedido = $request->input('codigo_pedido', ''); 
         $movimentacao->tipo_mov = $tipoMov;
         $movimentacao->quantidade_mov = $quantidade;
         $movimentacao->armazem_origem = $armazemOrigemName;
@@ -136,6 +136,36 @@ class MovimentacaoController extends Controller
 
         return redirect()->route('ListagemMovimentacao')->with('success', 'Movimentação registrada com sucesso.');
     }
+
+   // Atualiza uma movimentação específica
+public function AtualizandoMovimentacao(Request $request, $id)
+{
+    // Validação dos dados de entrada
+    $request->validate([
+        'name_user' => 'nullable|string',
+        'codigo_produto' => 'required|string',
+        'quantidade' => 'required|integer|min:1',
+        'tipo_mov' => 'required|string|in:Entrada,Saida,Transferencia',
+        'armazem_origem' => 'nullable|string',
+        'armazem_destino' => 'nullable|string',
+    ]);
+
+    // Busca a movimentação pelo ID
+    $movimentacao = Movimentacao::findOrFail($id);
+    $movimentacao->name_user = $request->input('name_user');
+    $movimentacao->codigo_produto = $request->input('codigo_produto');
+    $movimentacao->quantidade_mov = $request->input('quantidade');
+    $movimentacao->tipo_mov = $request->input('tipo_mov');
+    $movimentacao->armazem_origem = $request->input('armazem_origem');
+    $movimentacao->armazem_destino = $request->input('armazem_destino');
+
+    // Salva as alterações
+    $movimentacao->save();
+
+    // Redireciona para a lista de movimentações com uma mensagem de sucesso
+    return redirect()->route('ListagemMovimentacao')->with('success', 'Movimentação atualizada com sucesso.');
+}
+
 
     // Lista todas as movimentações
     public function ListagemMovimentacao()
@@ -147,16 +177,31 @@ class MovimentacaoController extends Controller
     }
 
     public function ConsultaEstoque()
-{
-    $estoques = DB::table('produto_armazem')
-        ->join('_armazens', 'produto_armazem.armazem_name', '=', '_armazens.name')
-        ->join('_produtos', 'produto_armazem.produto_id', '=', '_produtos.id')
-        ->select('_armazens.name as armazem', '_produtos.descricao as produto', DB::raw('SUM(produto_armazem.quantidade) as quantidade_total'))
-        ->groupBy('_armazens.name', '_produtos.descricao')
-        ->get();
-
-    return view('ConsultaEstoque', ['estoques' => $estoques]);
-}
+    {
+        // Realiza uma consulta no banco de dados usando o Query Builder do Laravel
+        $estoques = DB::table('produto_armazem')
+            // Realiza o JOIN entre 'produto_armazem' e '_armazens' para obter o nome do armazém
+            ->join('_armazens', 'produto_armazem.armazem_name', '=', '_armazens.name')
+            
+            // Realiza o JOIN entre 'produto_armazem' e '_produtos' para obter a descrição do produto
+            ->join('_produtos', 'produto_armazem.produto_id', '=', '_produtos.id')
+            
+            // Seleciona os campos para exibição:
+            // - O nome do armazém
+            // - A descrição do produto
+            // - A quantidade total de cada produto em cada armazém (soma de todas as quantidades)
+            ->select('_armazens.name as armazem', '_produtos.descricao as produto', DB::raw('SUM(produto_armazem.quantidade) as quantidade_total'))
+            
+            // Agrupa os resultados por armazém e por produto para obter a quantidade total de cada um
+            ->groupBy('_armazens.name', '_produtos.descricao')
+            
+            // Executa a consulta e obtém os resultados
+            ->get();
+    
+        // Retorna a view 'ConsultaEstoque' passando os resultados da consulta como uma variável chamada 'estoques'
+        return view('ConsultaEstoque', ['estoques' => $estoques]);
+    }
+    
 
     // Exibe a tela de edição de uma movimentação específica
     public function editMovimentacao($id)

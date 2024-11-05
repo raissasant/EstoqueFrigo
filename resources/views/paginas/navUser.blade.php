@@ -1,77 +1,135 @@
-<<<<<<< HEAD
-<nav class="navbar navbar-expand-lg bg-danger text-white">
-  <div class="container-fluid">
-    <a class="navbar-brand text-white" href="#">Painel do usuário</a>
-=======
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Painel do usuário</a>
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-<<<<<<< HEAD
-        <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="{{ route('homeUsuario') }}">Inicio</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-           Produtos
-=======
-        <!-- Link para o Início -->
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{{ route('user.dashboard') }}">Início</a>
-        </li>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Painel do Usuário</title>
 
-        <!-- Menu de Produtos -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Produtos
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ route('cadastroProduto') }}">Inserir um novo produto</a></li>
-            <li><a class="dropdown-item" href="{{ route('ListagemProduto') }}">Listagem de produtos</a></li>
-          </ul>
-        </li>
-<<<<<<< HEAD
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Gerenciar armazém
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ route('cadastroArmazem') }}">Cadastrar novo armazém</a></li>
-            <li><a class="dropdown-item" href="{{ route('ListagemArmazem') }}">Armazéns listados</a></li> 
-             <li><a class="dropdown-item" href="{{ route('ListagemMovimentacao')}}">Movimentações listadas</a></li>     
-          </ul>
-        </li>
-      </ul>
-=======
+    <!-- Inclui estilos Bootstrap e AdminLTE -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
 
-        <!-- Menu de Armazéns -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Gerenciar armazém
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ route('cadastroArmazem') }}">Inserir novo armazém</a></li>
-            <li><a class="dropdown-item" href="{{ route('ListagemArmazem') }}">Gerenciar movimentação</a></li>
-          </ul>
-        </li>
-      </ul>
+    <!-- Script JQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
 
-      <!-- Botão de Logout -->
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
-      <form action="{{ route('logout') }}" method="POST">
-        @csrf
-        <button class="btn btn-primary" type="submit">Sair</button>
-      </form>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Menu lateral fixo -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="position: fixed; top: 0; bottom: 0; left: 0; width: 250px; z-index: 1000;">
+    <a href="{{ route('homeUsuario') }}" class="brand-link">
+      <span class="brand-text font-weight-light">Painel do Usuário</span>
+    </a>
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          
+          <!-- Link para o Início -->
+          <li class="nav-item">
+            <a href="{{ route('homeUsuario') }}" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Início</p>
+            </a>
+          </li>
+
+          <!-- Produtos -->
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-box"></i>
+              <p>Produtos<i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('cadastroProduto') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Adicionar um novo produto</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('ListagemProduto') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Produtos cadastrados</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Armazéns -->
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-warehouse"></i>
+              <p>Armazéns<i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('cadastroArmazem') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Cadastrar novo armazém</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('ListagemArmazem') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Armazéns cadastrados</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('ListagemMovimentacao') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Listagem de Movimentações</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Fornecedores - Apenas visualização -->
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-boxes"></i>
+              <p>Fornecedores<i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('listagemFornecedor') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Fornecedores cadastrados</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Botão de Logout -->
+          <li class="nav-item">
+            <form action="{{ route('logout') }}" method="POST">
+              @csrf
+              <button class="btn btn-danger w-100" type="submit">
+                <i class="fas fa-sign-out-alt"></i> Sair
+              </button>
+            </form>
+          </li>
+        </ul>
+      </nav>
     </div>
+  </aside>
+
+  <!-- Conteúdo principal ao lado do menu lateral -->
+  <div class="content-wrapper" style="margin-left: 250px;">
+    <section class="content pt-3">
+      @yield('content')
+    </section>
   </div>
-<<<<<<< HEAD
-</nav>
-=======
-</nav>
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
+
+  <!-- Rodapé ao final do conteúdo principal -->
+  <footer class="main-footer text-center" style="margin-left: 250px;">
+    <strong>Gestão de estoque frigorífico.</strong> Todos os direitos reservados.
+  </footer>
+
+</div>
+
+<!-- Scripts Necessários -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+</body>
+</html>

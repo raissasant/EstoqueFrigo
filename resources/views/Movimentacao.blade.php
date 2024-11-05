@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="wrapper" style="display: flex;">
-  <div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1;">
+  <div class="content" style="margin-left: 10px; padding: 20px; flex-grow: 1;">
     <h1>Adicionar uma nova movimentação</h1>
     <br>
 

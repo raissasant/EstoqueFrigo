@@ -1,10 +1,10 @@
 @extends('paginas.base') <!-- Mantém sua base existente -->
-@extends('paginas.nav') <!-- Inclui a sidebar existente -->
+
 
 @section('content')
 <div class="wrapper" style="display: flex;">
 
-  <div class="content" style="margin-left: 250px; padding: 20px; flex-grow: 1;">
+  <div class="content" style="margin-left: 10px; padding: 20px; flex-grow: 1;">
     <h1>Cadastro de Armazém</h1>
     <br>
 
@@ -97,8 +97,6 @@ document.getElementById('cep').addEventListener('blur', function() {
     }
 });
 </script>
-<<<<<<< HEAD
+
 @endsection
-=======
-@endsection
->>>>>>> 49c95c28e4adee3a8cb2153f6bbd8ebe8fe9fecf
+

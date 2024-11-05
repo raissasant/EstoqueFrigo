@@ -40,7 +40,7 @@ class LoginController extends Controller
             if ($user->role === 'admin') { // Usando role para verificar se é admin
                 return redirect()->route('homeAdmin'); // Redirecionar para o painel do admin
             } else {
-                return redirect()->route('user.dashboard'); // Redirecionar para o painel do usuário comum
+                return redirect()->route('homeUsuario'); // Redirecionar para o painel do usuário comum
             }
         }
 
