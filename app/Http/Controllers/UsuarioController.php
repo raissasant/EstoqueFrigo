@@ -68,7 +68,7 @@ class UsuarioController extends Controller
     public function atualizarUsuario(Request $request, $id)
     {
         $user = User::findOrFail($id);
-    
+
         // Validação dos dados
         $request->validate([
             'name' => 'nullable|string',
@@ -93,7 +93,7 @@ class UsuarioController extends Controller
             $user->password = Hash::make($request->input('password'));
         }
 
-        // Atualiza o papel do usuário
+        // Atualiza o papel do usuário e o CPF
         $user->role = $request->input('role');
         $user->cpf = $request->input('cpf');
 
@@ -117,7 +117,7 @@ class UsuarioController extends Controller
         $user = auth()->user(); // Usuário autenticado
 
         // Relacionamentos para produtos, armazéns e movimentações
-        $produtos = $user->produtos; 
+        $produtos = $user->produtos;
         $armazens = $user->armazens;
         $movimentacoes = $user->movimentacoes;
 
@@ -131,15 +131,15 @@ class UsuarioController extends Controller
         $totalProdutosEmEstoque = Produto::sum('quantidade');
 
         // Dados para os gráficos usando '_armazens' e '_produtos' como nomes das tabelas
-    $estoquePorArmazem = DB::table('produto_armazem')
-    ->join('_armazens', 'produto_armazem.armazem_name', '=', '_armazens.name')
-    ->join('_produtos', 'produto_armazem.produto_id', '=', '_produtos.id')
-    ->select('_armazens.name as armazem', '_produtos.descricao as produto', DB::raw('SUM(produto_armazem.quantidade) as total'))
-    ->groupBy('_armazens.name', '_produtos.descricao')
-    ->get()
-    ->groupBy('armazem');
+        $estoquePorArmazem = DB::table('produto_armazem')
+            ->join('_armazens', 'produto_armazem.armazem_name', '=', '_armazens.name')
+            ->join('_produtos', 'produto_armazem.produto_id', '=', '_produtos.id')
+            ->select('_armazens.name as armazem', '_produtos.descricao as produto', DB::raw('SUM(produto_armazem.quantidade) as total'))
+            ->groupBy('_armazens.name', '_produtos.descricao')
+            ->get()
+            ->groupBy('armazem');
 
-    $estoquePorProduto = Produto::select('descricao', 'quantidade')->pluck('quantidade', 'descricao');
+        $estoquePorProduto = Produto::select('descricao', 'quantidade')->pluck('quantidade', 'descricao');
 
         return view('Usuario', [
             'contagemProduto' => $contagemProduto,

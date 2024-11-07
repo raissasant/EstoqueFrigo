@@ -132,14 +132,12 @@
               <p>Produtos<i class="right fas fa-angle-left"></i></p>
             </a>
             <ul class="nav nav-treeview">
-              @if(auth()->user()->role === 'admin')
-                <li class="nav-item">
-                  <a href="{{ route('cadastroProduto') }}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Adicionar um novo produto</p>
-                  </a>
-                </li>
-              @endif
+              <li class="nav-item">
+                <a href="{{ route('cadastroProduto') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Adicionar um novo produto</p>
+                </a>
+              </li>
               <li class="nav-item">
                 <a href="{{ route('ListagemProduto') }}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -156,14 +154,12 @@
               <p>Armazéns<i class="right fas fa-angle-left"></i></p>
             </a>
             <ul class="nav nav-treeview">
-              @if(auth()->user()->role === 'admin')
-                <li class="nav-item">
-                  <a href="{{ route('cadastroArmazem') }}" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Adicionar um novo armazém</p>
-                  </a>
-                </li>
-              @endif
+              <li class="nav-item">
+                <a href="{{ route('cadastroArmazem') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Adicionar um novo armazém</p>
+                </a>
+              </li>
               <li class="nav-item">
                 <a href="{{ route('ListagemArmazem') }}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -198,7 +194,7 @@
       </nav>
     </div>
   </aside>
-  
+
   <!-- Conteúdo principal ao lado do menu lateral -->
   <div class="content-wrapper" style="margin-left: 250px;">
     <section class="content pt-3">

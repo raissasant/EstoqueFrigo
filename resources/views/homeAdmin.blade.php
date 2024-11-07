@@ -74,8 +74,7 @@
         </div>
     </div>
 
-    
-<!-- Script para Gráficos -->
-@include('paginas.graficos')
-
+    <!-- Incluindo os gráficos de controle de estoque -->
+    @include('paginas.graficos')
+</div>
 @endsection

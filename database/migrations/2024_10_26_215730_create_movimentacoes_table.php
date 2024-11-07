@@ -21,8 +21,8 @@ return new class extends Migration
             $table->integer('quantidade_mov');
             $table->string('codigo_produto');
             $table->string('tipo_mov');
-            $table->string('armazem_origem')->nullable();  // Remova o `->change()` daqui
-            $table->string('armazem_destino')->nullable(); // Remova o `->change()` daqui
+            $table->string('armazem_origem')->nullable();
+            $table->string('armazem_destino')->nullable();
             $table->string('codigo_entrada');
             $table->string('codigo_saida');
             $table->string('codigo_pedido');
