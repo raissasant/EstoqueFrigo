@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Armazem;
 use Auth;
 
-
 class ArmazemController extends Controller
 {
     // Método para exibir a tela de criação ou visualização de armazéns
@@ -54,14 +53,11 @@ class ArmazemController extends Controller
         return redirect()->route('ListagemArmazem');
     }
 
-    // Método para listar os armazéns do usuário
+    // Método para listar todos os armazéns
     public function ListagemArmazem()
     {
-        // Obtém o usuário autenticado
-        $user = Auth::user();
-
-        // Verifica se o usuário é admin; caso contrário, lista apenas os armazéns dele
-        $armazens = $user->role === 'admin' ? Armazem::all() : $user->armazens;
+        // Recupera todos os armazéns, independentemente do usuário que os cadastrou
+        $armazens = Armazem::all();
 
         // Retorna a view com a lista de armazéns
         return view('ListagemArmazem', ['armazens' => $armazens]);
@@ -70,11 +66,8 @@ class ArmazemController extends Controller
     // Método para exibir a página de edição de um armazém específico
     public function editArmazem($id)
     {
-        // Obtém o usuário autenticado
-        $user = Auth::user();
-
-        // Verifica permissões: se admin, acessa qualquer armazém; se não, acessa apenas o próprio
-        $armazem = $user->role === 'admin' ? Armazem::findOrFail($id) : $user->armazens()->findOrFail($id);
+        // Carrega o armazém pelo ID, sem restrições de usuário
+        $armazem = Armazem::findOrFail($id);
 
         // Retorna a view de edição com os dados do armazém
         return view('editArmazem', ['armazem' => $armazem]);
@@ -97,9 +90,8 @@ class ArmazemController extends Controller
             'status' => 'nullable|in:ativo,inativo'
         ]);
 
-        // Obtém o usuário autenticado e o armazém a ser atualizado
-        $user = Auth::user();
-        $armazem = $user->role === 'admin' ? Armazem::findOrFail($id) : $user->armazens()->findOrFail($id);
+        // Carrega o armazém pelo ID, sem restrições de usuário
+        $armazem = Armazem::findOrFail($id);
 
         // Atualiza o armazém apenas com os dados preenchidos
         $armazem->update($request->only([
@@ -108,52 +100,13 @@ class ArmazemController extends Controller
 
         // Redireciona para a lista de armazéns com uma mensagem de sucesso
         return redirect()->route('ListagemArmazem')->with('success', 'Armazém atualizado com sucesso.');
-
-        // Código opcional para verificar campos individualmente
-        if ($request->filled('name')) {
-            $armazem->name = $request->input('name');
-        }
-        if ($request->filled('cep')) {
-            $armazem->cep = $request->input('cep');
-        }
-        if ($request->filled('rua')) {
-            $armazem->rua = $request->input('rua');
-        }
-        if ($request->filled('complemento')) {
-            $armazem->complemento = $request->input('complemento');
-        }
-        if ($request->filled('bairro')) {
-            $armazem->bairro = $request->input('bairro');
-        }
-        if ($request->filled('cidade')) {
-            $armazem->cidade = $request->input('cidade');
-        }
-        if ($request->filled('uf')) {
-            $armazem->uf = $request->input('uf');
-        }
-        if ($request->filled('capacidade_total')) {
-            $armazem->capacidade_total = $request->input('capacidade_total');
-        }
-        if ($request->filled('espaco_disponivel')) {
-            $armazem->espaco_disponivel = $request->input('espaco_disponivel');
-        }
-        if ($request->filled('status')) {
-            $armazem->status = $request->input('status');
-        }
-
-        $armazem->save(); // Salva o armazém no banco de dados após alterações
-
-        return redirect()->route('ListagemArmazem'); // Redireciona após a atualização
     }
 
     // Método para excluir um armazém específico
     public function deleteArmazem($id)
     {
-        // Obtém o usuário autenticado
-        $user = Auth::user();
-
-        // Verifica permissões: se admin, pode deletar qualquer armazém; se não, deleta apenas o próprio
-        $armazem = $user->role === 'admin' ? Armazem::findOrFail($id) : $user->armazens()->findOrFail($id);
+        // Carrega o armazém pelo ID, sem restrições de usuário
+        $armazem = Armazem::findOrFail($id);
 
         // Se o armazém for encontrado, realiza a exclusão e redireciona
         if ($armazem) {

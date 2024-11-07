@@ -20,6 +20,9 @@ class HomeController extends Controller
         $contagemProduto = Produto::count();
         $contagemArmazem = Armazem::count();
 
+        // Contagem total de itens em estoque (soma das quantidades de todos os produtos)
+        $totalProdutosEmEstoque = Produto::sum('quantidade');
+
         // Dados para o gráfico de estoque por armazém
         $estoquePorArmazem = Movimentacao::select('armazem_destino', DB::raw('SUM(quantidade_mov) as total'))
             ->groupBy('armazem_destino')
@@ -35,6 +38,7 @@ class HomeController extends Controller
             'contagemFornecedor' => $contagemFornecedor,
             'contagemProduto' => $contagemProduto,
             'contagemArmazem' => $contagemArmazem,
+            'totalProdutosEmEstoque' => $totalProdutosEmEstoque, // Adiciona o total de itens em estoque
             'estoquePorArmazem' => $estoquePorArmazem,
             'estoquePorProduto' => $estoquePorProduto
         ]);

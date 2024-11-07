@@ -36,53 +36,72 @@
   var armazemLabels = Object.keys(armazemData);
   var productLabels = [];
   var datasets = [];
-  var lowStockThreshold = 50;
+  var lowStockThreshold = 5; // Defina o limite de estoque baixo
 
   armazemLabels.forEach(armazem => {
     armazemData[armazem].forEach(produto => {
-        if (!productLabels.includes(produto.produto)) {
-            productLabels.push(produto.produto);
-        }
+      if (!productLabels.includes(produto.produto)) {
+        productLabels.push(produto.produto);
+      }
     });
   });
 
   productLabels.forEach(produto => {
     var data = armazemLabels.map(armazem => {
-        var item = armazemData[armazem].find(p => p.produto === produto);
-        return item ? item.total : 0;
+      var item = armazemData[armazem].find(p => p.produto === produto);
+      var quantity = item ? item.total : 0;
+      
+      // Se a quantidade for menor que o limite, exibir como negativo
+      return quantity < lowStockThreshold ? -Math.abs(lowStockThreshold) : quantity;
     });
 
-    var backgroundColors = data.map(quantity => quantity < lowStockThreshold ? 'rgba(255, 99, 132, 0.2)' : 'rgba(75, 192, 192, 0.2)');
-    var borderColors = data.map(quantity => quantity < lowStockThreshold ? 'rgba(255, 99, 132, 1)' : 'rgba(75, 192, 192, 1)');
+    var backgroundColors = data.map(quantity => 
+      quantity < 0 ? 'rgba(255, 99, 132, 0.5)' : 
+      'rgba(75, 192, 192, 0.5)'
+    );
+
+    var borderColors = data.map(quantity => 
+      quantity < 0 ? 'rgba(255, 99, 132, 1)' : 
+      'rgba(75, 192, 192, 1)'
+    );
 
     datasets.push({
-        label: produto,
-        data: data,
-        backgroundColor: backgroundColors,
-        borderColor: borderColors,
-        borderWidth: 1
+      label: produto,
+      data: data,
+      backgroundColor: backgroundColors,
+      borderColor: borderColors,
+      borderWidth: 1
     });
   });
 
   new Chart(document.getElementById('stockChart').getContext('2d'), {
     type: 'bar',
     data: {
-        labels: armazemLabels,
-        datasets: datasets
+      labels: armazemLabels,
+      datasets: datasets
     },
     options: {
-        plugins: {
-            title: { display: true, text: 'Quantidade de Produtos por Armazém' },
-            tooltip: { callbacks: { label: context => `${context.dataset.label}: ${context.raw} unidade(s)` } }
-        },
-        responsive: true,
-        scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'Quantidade de Produtos' } },
-            x: { title: { display: true, text: 'Armazéns' } }
+      plugins: {
+        title: { display: true, text: 'Quantidade de Produtos por Armazém' },
+        tooltip: { 
+          callbacks: { 
+            label: context => `${context.dataset.label}: ${context.raw} unidade(s)` 
+          } 
         }
+      },
+      responsive: true,
+      scales: {
+        y: { 
+          beginAtZero: false, // Permite valores negativos
+          title: { display: true, text: 'Quantidade de Produtos' } 
+        },
+        x: { title: { display: true, text: 'Armazéns' } }
+      }
     }
   });
 </script>
+
+
 
 <!-- Script para gerar o gráfico de Produtos em Estoque -->
 <script>

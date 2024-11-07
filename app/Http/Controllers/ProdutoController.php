@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Produto; // Importando o modelo de Produto
 use App\Models\User; // Importando o modelo de User
 use App\Models\Admin; // Importando o modelo de Admin
@@ -14,17 +13,11 @@ use App\Rules\CnpjValid; // Regra de validação para CNPJ
 use Illuminate\Validation\ValidationException; // Para exceções de validação
 use SimpleSoftwareIO\QrCode\Facades\QrCode; // Para geração de QR Code
 
-
-
 class ProdutoController extends Controller
 {
     public function TelaProduto()
     {
-
-       
-
         return view('Produtos'); // Certifique-se que este é o nome correto da view.
-
     }
 
     public function storeProduto(Request $request)
@@ -40,10 +33,7 @@ class ProdutoController extends Controller
             'peso' => 'required|string',
             'categoria' => 'required|string',
             'quantidade' => 'required|integer|min:0',
-
             'sku' => 'required|string|unique:_produtos,sku', // Ajuste para _produtos
-
-            
         ], [
             'sku.unique' => 'O SKU informado já está em uso.',
             'valor_venda.gte' => 'O Valor de Venda deve ser maior ou igual ao valor de compra.',
@@ -70,33 +60,23 @@ class ProdutoController extends Controller
 
     public function listagemProduto()
     {
-        $user = Auth::user();
-
-        // Admin vê todos os produtos; usuário comum vê apenas os próprios
-        $produtos = $user->role === 'admin' ? Produto::all() : $user->produtos;
-
-        $produtos = $user->produtos; // Certifique-se de que há um relacionamento correto.
+        // Exibe todos os produtos, independente do usuário que os cadastrou
+        $produtos = Produto::all();
 
         return view('ProdutoListagem', ['produtos' => $produtos]);
     }
 
     public function editProduto($id)
     {
-        $user = Auth::user();
-
-
-        // Admin pode editar qualquer produto; usuário comum apenas os próprios
-        $produto = $user->role === 'admin' ? Produto::findOrFail($id) : $user->produtos()->findOrFail($id);
+        // Permite que qualquer usuário acesse qualquer produto para edição
+        $produto = Produto::findOrFail($id);
 
         return view('editProduto', ['produto' => $produto]);
     }
 
-    
-   
     public function AtualizandoProduto(Request $request, $id)
     {
-        $user = Auth::user();
-        $produto = $user->produtos()->findOrFail($id);
+        $produto = Produto::findOrFail($id); // Permite que qualquer usuário edite qualquer produto
 
         $request->validate([
             'name' => 'nullable|string|max:80',
@@ -132,49 +112,36 @@ class ProdutoController extends Controller
 
     public function deleteProduto($id)
     {
-        $user = Auth::user();
-        $produto = $user->produtos()->findOrFail($id);
+        // Permite que qualquer usuário delete qualquer produto
+        $produto = Produto::findOrFail($id);
 
         if ($produto) {
             $produto->delete();
             return redirect()->route('ListagemProduto')->with('success', 'Produto deletado com sucesso.');
-
         } else {
             return 'Produto não encontrado.';
         }
     }
 
-
     public function SearchProduto(Request $request)
     {
-        $user_id = auth()->user()->id;
         $search = $request->input('search');
 
-        $query = Produto::where('user_id', $user_id);
-
+        // Busca sem filtro por usuário
+        $query = Produto::query();
 
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('name', 'LIKE', '%' . $search . '%')
-                  ->orWhere('sku', 'LIKE', '%' . $search . '%');
+                  ->orWhere('codigo_produto', 'LIKE', '%' . $search . '%');
             });
         }
 
         $produtos = $query->get();
 
-
         return view('ProdutoListagem', [
             'produtos' => $produtos,
             'message' => $produtos->isEmpty() ? 'Nenhum produto encontrado para a busca "' . $search . '"' : null
         ]);
-
-        if ($produtos->isEmpty()) {
-            return view('ProdutoListagem', [
-                'produtos' => $produtos,
-                'message' => 'Nenhum produto encontrado para a busca "' . $search . '"'
-            ]);
-        }
-
-        return view('ProdutoListagem', ['produtos' => $produtos]);
     }
 }

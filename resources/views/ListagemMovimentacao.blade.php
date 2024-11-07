@@ -1,6 +1,5 @@
 @extends('paginas.base')
 
-
 @section('content')
 
 <br>
@@ -20,26 +19,26 @@
     </button>
 
     <div id="pdf-content">
-        <table class="table table-bordered table-striped mt-3" style="width: 100%; font-size: 0.9em;">
-            <thead>
+        <table class="table table-bordered mt-3" style="width: 100%; font-size: 0.9em;">
+            <thead style="background-color: #4CAF50; color: white;">
                 <tr>
                     <th>ID</th>
                     <th>Usuário</th>
                     <th>Tipo de Movimentação</th>
                     <th>Quantidade</th>
-                    <th>Código do Produto</th>
-                    <th>Armazém de Origem</th>
-                    <th>Armazém de Destino</th>
-                    <th>Código de Entrada</th>
-                    <th>Código de Saída</th>
-                    <th>Código de Pedido</th>
+                    <th>Código Produto</th>
+                    <th>Armazém Origem</th>
+                    <th>Armazém  Destino</th>
+                    <th>Código  Entrada</th>
+                    <th>Código  Saída</th>
+                    <th>Código  Pedido</th>
                     <th>Data da Movimentação</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($movimentacoes as $movimentacao)
-                    <tr id="movimentacao-{{ $movimentacao->id }}">
+                @foreach($movimentacoes as $index => $movimentacao)
+                    <tr style="background-color: {{ $index % 2 == 0 ? '#e6f7e6' : '#ffffff' }};">
                         <td>{{ $movimentacao->id }}</td>
                         <td>{{ $movimentacao->name_user }}</td>
                         <td>{{ $movimentacao->tipo_mov }}</td>

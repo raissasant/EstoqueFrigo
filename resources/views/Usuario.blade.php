@@ -3,7 +3,8 @@
 @section('content')
 <div class="container my-5">
     <div class="text-center">
-        <h1>Bem-vindo(a), {{ session('user_name') }}</h1>
+        <!-- Exibe o nome do usuário logado -->
+        <h1>Bem-vindo(a), {{ Auth::user()->name }}</h1>
     </div>
     
     <div class="row mt-5">

@@ -3,12 +3,12 @@
 @section('content')
 <div class="container my-5">
     <div class="text-center">
-        <h1>Bem-vindo(a), Administrador {{ session('user_name') }}</h1>
+    <h1>Bem-vindo(a), {{ Auth::user()->name }}</h1>
     </div>
     
     <div class="row mt-5">
         <!-- Total de Usuários -->
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-4 col-md-6 mb-4">
             <div class="card text-white bg-info h-100">
                 <div class="card-body">
                     <h5 class="card-title">Total de usuários</h5>
@@ -19,7 +19,7 @@
         </div>
 
         <!-- Total de Fornecedores -->
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-4 col-md-6 mb-4">
             <div class="card text-white bg-success h-100">
                 <div class="card-body">
                     <h5 class="card-title">Total de fornecedores</h5>
@@ -29,19 +29,8 @@
             </div>
         </div>
 
-        <!-- Total de Movimentações -->
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card text-white bg-secondary h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Total de movimentações</h5>
-                    <p class="card-text">{{ $contagemMovimentacao }} movimentação(s)</p>
-                    <a href="{{ route('ListagemMovimentacao') }}" class="btn btn-light">Ver movimentação(s)</a>
-                </div>
-            </div>
-        </div>
-
         <!-- Total de Produtos -->
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-4 col-md-6 mb-4">
             <div class="card text-white bg-warning h-100">
                 <div class="card-body">
                     <h5 class="card-title">Total de produtos</h5>
@@ -52,7 +41,7 @@
         </div>
 
         <!-- Total de Armazéns -->
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-4 col-md-6 mb-4">
             <div class="card text-white bg-danger h-100">
                 <div class="card-body">
                     <h5 class="card-title">Total de armazéns</h5>
@@ -62,8 +51,19 @@
             </div>
         </div>
 
+        <!-- Total de Movimentações -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card text-white bg-secondary h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Total de movimentações</h5>
+                    <p class="card-text">{{ $contagemMovimentacao }} movimentação(s)</p>
+                    <a href="{{ route('ListagemMovimentacao') }}" class="btn btn-light">Ver movimentação(s)</a>
+                </div>
+            </div>
+        </div>
+
         <!-- Total de Produtos em Estoque -->
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-4 col-md-6 mb-4">
             <div class="card text-white bg-primary h-100">
                 <div class="card-body">
                     <h5 class="card-title">Total de produtos em estoque</h5>
@@ -74,7 +74,7 @@
         </div>
     </div>
 
-    <!-- Incluindo os gráficos de controle de estoque -->
+    <!-- Incluindo gráficos de controle de estoque -->
     @include('paginas.graficos')
 </div>
 @endsection

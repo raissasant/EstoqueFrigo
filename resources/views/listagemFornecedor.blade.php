@@ -1,6 +1,5 @@
 @extends('paginas.base')
 
-
 @section('content')
 <div class="wrapper" style="display: flex;">
   <div class="content" style="margin-left: 10px; padding: 20px; flex-grow: 1;">
@@ -54,16 +53,19 @@
                             {{ ucfirst($fornecedor->status) }}
                         </td>
                         <td>
-                            <a href="{{ route('EditFornecedor', ['id' => $fornecedor->id]) }}" class="btn btn-primary btn-sm mb-2" style="padding: 4px 8px; font-size: 0.875rem;">
-                            <i class="fas fa-edit"></i> Editar
-                            </a>
-                            <form action="{{ route('deleteFornecedor', ['id' => $fornecedor->id]) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.875rem;" onclick="return confirm('Tem certeza que deseja excluir?');">
-                                <i class="fas fa-trash-alt"></i> Excluir
-                                </button>
-                            </form>
+                            <!-- Contêiner flexível para alinhar os botões lado a lado -->
+                            <div style="display: flex; gap: 5px;">
+                                <a href="{{ route('EditFornecedor', ['id' => $fornecedor->id]) }}" class="btn btn-primary btn-sm" style="padding: 4px 8px; font-size: 0.875rem;">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <form action="{{ route('deleteFornecedor', ['id' => $fornecedor->id]) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.875rem;" onclick="return confirm('Tem certeza que deseja excluir?');">
+                                        <i class="fas fa-trash-alt"></i> Excluir
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -79,4 +81,3 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 @endsection
-

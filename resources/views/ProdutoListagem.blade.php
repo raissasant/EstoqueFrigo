@@ -1,18 +1,17 @@
 @extends('paginas.base')
 
-
 @section('content')
 <div class="wrapper" style="display: flex;">
 
   <!-- Conteúdo Principal -->
-  <div class="content" style="margin-left: 10px; padding: 20px; flex-grow: 1;">
+  <div class="content" style="margin-left: 5px; padding: 20px; flex-grow: 1;">
     <h1>Listagem de produtos</h1>
 
     <form action="{{ route('SearchProduto') }}" method="GET">
       @csrf
       <div class="mb-3">
         <label for="search">Buscar produto</label>
-        <input type="text" class="form-control" name="search" id="search" placeholder="Digite o nome ou SKU">
+        <input type="text" class="form-control" name="search" id="search" placeholder="Digite o nome ou Código"> 
       </div>
       <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
     </form>
@@ -35,8 +34,8 @@
 
     <br>
 
-    <table class="table mt-3 table-bordered table-striped">
-      <thead>
+    <table class="table mt-3 table-bordered">
+      <thead style="background-color: #d0e9d6; color: #333;">
         <tr>
           <th>ID</th>
           <th>Nome</th>
@@ -52,8 +51,8 @@
         </tr>
       </thead>
       <tbody>
-        @foreach($produtos as $produto)
-          <tr>
+        @foreach($produtos as $index => $produto)
+          <tr style="background-color: {{ $index % 2 == 0 ? '#f5faf5' : '#ffffff' }};">
             <td>{{ $produto->id }}</td>
             <td>{{ $produto->name }}</td>
             <td>{{ $produto->descricao }}</td>
