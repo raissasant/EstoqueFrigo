@@ -1,27 +1,27 @@
 @extends('paginas.base')
 
 @section('content')
-<div class="wrapper" style="display: flex;">
+<div class="wrapper d-flex justify-content-center">
+  <div class="content" style="padding: 0px; width: 100%; max-width: 1200px;">
+    <h1 class="text-center mb-4">Listagem de Produtos</h1>
 
-  <!-- Conteúdo Principal -->
-  <div class="content" style="margin-left: 5px; padding: 20px; flex-grow: 1;">
-    <h1>Listagem de produtos</h1>
-
-    <form action="{{ route('SearchProduto') }}" method="GET">
+    <!-- Formulário de Busca -->
+    <form action="{{ route('SearchProduto') }}" method="GET" class="mb-4">
       @csrf
-      <div class="mb-3">
-        <label for="search">Buscar produto</label>
-        <input type="text" class="form-control" name="search" id="search" placeholder="Digite o nome ou Código"> 
+      <div class="input-group">
+        <input type="text" class="form-control" name="search" id="search" placeholder="Buscar por nome ou código do produto">
+        <button type="submit" class="btn btn-primary">Buscar</button>
       </div>
-      <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
     </form>
 
+    <!-- Mensagem de Alerta -->
     @if(isset($message))
       <div class="alert alert-warning mt-3">
         {{ $message }}
       </div>
     @endif
 
+    <!-- Mensagens de Erro -->
     @if($errors->any())
       <div class="alert alert-danger mt-3">
         <ul>
@@ -32,82 +32,128 @@
       </div>
     @endif
 
-    <br>
-
-    <table class="table mt-3 table-bordered">
-      <thead style="background-color: #d0e9d6; color: #333;">
-        <tr>
-          <th>ID</th>
-          <th>Nome</th>
-          <th>Descrição</th>
-          <th>Código produto</th>
-          <th>Categoria</th>
-          <th>SKU</th>
-          <th>Valor compra (R$)</th>
-          <th>Valor venda (R$)</th>
-          <th>Quantidade em estoque</th>
-          <th>QR Code</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach($produtos as $index => $produto)
-          <tr style="background-color: {{ $index % 2 == 0 ? '#f5faf5' : '#ffffff' }};">
-            <td>{{ $produto->id }}</td>
-            <td>{{ $produto->name }}</td>
-            <td>{{ $produto->descricao }}</td>
-            <td>{{ $produto->codigo_produto }}</td>
-            <td>{{ $produto->categoria }}</td>
-            <td>{{ $produto->sku }}</td>
-            <td>{{ $produto->valor_compra }}</td>
-            <td>{{ $produto->valor_venda }}</td>
-            <td>{{ $produto->quantidade }}</td>
-            <td>
-              <div id="qrcode-{{ $produto->id }}"></div>
-            </td>
-            <td>
-              <a href="{{ route('TelaMovimentacao', ['id' => $produto->id]) }}" class="btn btn-info btn-sm action-btn"><i class="fas fa-exchange-alt"></i> Movimentar</a>
-              <a href="{{ route('editProduto', ['id' => $produto->id]) }}" class="btn btn-primary btn-sm action-btn"><i class="fas fa-edit"></i> Editar</a>
-              <form action="{{ route('deleteProduto', ['id' => $produto->id]) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar este produto?');" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm action-btn"><i class="fas fa-trash"></i> Deletar</button>
-              </form>
-            </td>
+    <!-- Tabela de Produtos -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped text-center mt-3">
+        <thead style="background-color: #d0e9d6; color: #333;">
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Código</th>
+            <th>Categoria</th>
+            <th>SKU</th>
+            <th>Compra (R$)</th>
+            <th>Venda (R$)</th>
+            <th>Estoque</th>
+            <th>Validade</th>
+            <th>Armazém</th>
+            <th>Fornecedores</th>
+            <th>QR Code</th>
+            <th style="min-width: 120px;">Ações</th>
           </tr>
-        @endforeach
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @foreach($produtos as $produto)
+            <tr>
+              <td>{{ $produto->id }}</td>
+              <td>{{ $produto->name }}</td>
+              <td>{{ Str::limit($produto->descricao, 30) }}</td>
+              <td>{{ $produto->codigo_produto }}</td>
+              <td>{{ $produto->categoria }}</td>
+              <td>{{ $produto->sku }}</td>
+              <td>{{ number_format($produto->valor_compra, 2, ',', '.') }}</td>
+              <td>{{ number_format($produto->valor_venda, 2, ',', '.') }}</td>
+              <td>{{ $produto->quantidade }}</td>
+              <td>{{ $produto->data_validade ? \Carbon\Carbon::parse($produto->data_validade)->format('d/m/Y') : 'N/A' }}</td>
+              <td>{{ $produto->armazens->isNotEmpty() ? $produto->armazens->first()->name : 'Agro' }}</td>
+              <td>
+                @foreach($produto->fornecedores as $fornecedor)
+                  <span>{{ $fornecedor->name }}</span><br>
+                @endforeach
+              </td>
+              <td>
+                <div id="qrcode-{{ $produto->id }}"></div>
+              </td>
+              <td>
+                <div class="d-flex flex-column gap-1">
+                  <a href="{{ route('TelaMovimentacao', ['id' => $produto->id]) }}" class="btn btn-info btn-sm thin-action mb-1">
+                    <i class="fas fa-exchange-alt"></i> Movimentar
+                  </a>
+                  <a href="{{ route('editProduto', ['id' => $produto->id]) }}" class="btn btn-primary btn-sm thin-action mb-1">
+                    <i class="fas fa-edit"></i> Editar
+                  </a>
+                  <form action="{{ route('deleteProduto', ['id' => $produto->id]) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar este produto?');" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm thin-action"><i class="fas fa-trash"></i> Deletar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
 
-    <a href="{{ route('cadastroProduto') }}" class="btn btn-dark btn-sm"><i class="fas fa-plus"></i> Cadastrar novo produto</a>
+    <!-- Botão para Cadastrar Produto -->
+    <div class="mt-4 text-end">
+      <a href="{{ route('cadastroProduto') }}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Cadastrar Produto
+      </a>
+    </div>
   </div>
 </div>
 
-<!-- Geração de QR Code -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Biblioteca QR Code -->
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        @foreach($produtos as $produto)
-            var qrContent = 'Produto: {{ $produto->name }} - Categoria: {{ $produto->categoria }} - SKU: {{ $produto->sku }} - Valor compra(R$): {{ $produto->valor_compra }} - Valor venda(R$): {{ $produto->valor_venda }} - Quantidade: {{ $produto->quantidade }}'; 
-            var qrcodeElement = document.getElementById("qrcode-{{ $produto->id }}");
+document.addEventListener('DOMContentLoaded', function () {
+    @foreach ($produtos as $produto)
+        var armazemName = "{{ $produto->armazens->isNotEmpty() ? $produto->armazens->first()->name : 'Agro' }}";
 
-            if (qrcodeElement) {
-                new QRCode(qrcodeElement, {
-                    text: qrContent,
-                    width: 100,
-                    height: 100
-                });
-            }
-        @endforeach
-    });
+        // Texto do QR Code
+        var qrContent = `Produto: {{ $produto->name }} | Qtd: {{ $produto->quantidade }} | Val: {{ $produto->data_validade ? \Carbon\Carbon::parse($produto->data_validade)->format('d/m/Y') : 'N/A' }} | Armazém: ${armazemName}`;
+
+        console.log('QR Content:', qrContent);
+
+        var qrcodeElement = document.getElementById("qrcode-{{ $produto->id }}");
+
+        if (qrcodeElement) {
+            qrcodeElement.innerHTML = ""; // Limpa o QR Code existente
+            new QRCode(qrcodeElement, {
+                text: qrContent, // Insere o texto diretamente
+                width: 150,      // Tamanho do QR Code
+                height: 150,     // Tamanho do QR Code
+                correctLevel: QRCode.CorrectLevel.L // Correção mínima
+            });
+        }
+    @endforeach
+});
 </script>
 
-<!-- Estilo para os botões em coluna -->
+<!-- Estilos Personalizados -->
 <style>
-    .action-btn {
-        display: block;
-        width: 100%; /* Mantém todos os botões da mesma largura */
-        margin-bottom: 5px; /* Espaçamento entre os botões */
+    .table-responsive {
+        overflow-x: auto;
+    }
+    .content h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .table th, .table td {
+        vertical-align: middle;
+        font-size: 0.9em;
+        padding: 8px;
+    }
+    .table th {
+        background-color: #d0e9d6;
+        color: #333;
+    }
+    .btn-sm.thin-action {
+        padding: 3px 6px;
+        font-size: 0.75em;
+        width: 100%;
     }
 </style>
 @endsection

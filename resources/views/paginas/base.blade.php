@@ -59,7 +59,7 @@
 <div class="wrapper">
 
   <!-- Menu lateral fixo -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="position: fixed; top: 0; bottom: 0; left: 0; width: 250px; z-index: 1000;">
+  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="position: fixed; top: 0; bottom: 0; left: 0; width: 240px; z-index: 1000;">
     <a href="{{ route(auth()->user()->role === 'admin' ? 'homeAdmin' : 'homeUsuario') }}" class="brand-link">
       <span class="brand-text font-weight-light">
         {{ auth()->user()->role === 'admin' ? 'Painel do Administrador' : 'Painel do Usuário' }}
@@ -196,7 +196,7 @@
   </aside>
 
   <!-- Conteúdo principal ao lado do menu lateral -->
-  <div class="content-wrapper" style="margin-left: 250px;">
+  <div class="content-wrapper" style="margin-left: 240px;">
     <section class="content pt-3">
       @yield('content')
     </section>

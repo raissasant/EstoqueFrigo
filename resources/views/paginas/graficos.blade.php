@@ -30,14 +30,15 @@
 <!-- Incluir a biblioteca Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Script para gerar o gráfico dos armazéns -->
 <script>
+  // Dados do gráfico de estoque por armazém
   var armazemData = {!! json_encode($estoquePorArmazem) !!};
   var armazemLabels = Object.keys(armazemData);
   var productLabels = [];
   var datasets = [];
-  var lowStockThreshold = 5; // Defina o limite de estoque baixo
+  var lowStockThreshold = 10; // Define o limite de estoque baixo
 
+  // Extrair todos os produtos de todos os armazéns
   armazemLabels.forEach(armazem => {
     armazemData[armazem].forEach(produto => {
       if (!productLabels.includes(produto.produto)) {
@@ -46,24 +47,29 @@
     });
   });
 
+  // Configurar dados para cada produto, convertendo estoques baixos em valores negativos
   productLabels.forEach(produto => {
-    var data = armazemLabels.map(armazem => {
+    var data = [];
+    var backgroundColors = [];
+    var borderColors = [];
+    
+    armazemLabels.forEach(armazem => {
       var item = armazemData[armazem].find(p => p.produto === produto);
       var quantity = item ? item.total : 0;
       
-      // Se a quantidade for menor que o limite, exibir como negativo
-      return quantity < lowStockThreshold ? -Math.abs(lowStockThreshold) : quantity;
+      // Converte a quantidade para negativa se estiver abaixo do limite
+      var displayQuantity = quantity < lowStockThreshold ? -Math.abs(quantity) : quantity;
+      data.push(displayQuantity);
+      
+      // Define a cor com base no estoque
+      if (quantity < lowStockThreshold) {
+        backgroundColors.push('rgba(255, 99, 132, 0.5)'); // Estoque baixo (vermelho)
+        borderColors.push('rgba(255, 99, 132, 1)');
+      } else {
+        backgroundColors.push('rgba(75, 192, 192, 0.5)'); // Estoque normal (azul)
+        borderColors.push('rgba(75, 192, 192, 1)');
+      }
     });
-
-    var backgroundColors = data.map(quantity => 
-      quantity < 0 ? 'rgba(255, 99, 132, 0.5)' : 
-      'rgba(75, 192, 192, 0.5)'
-    );
-
-    var borderColors = data.map(quantity => 
-      quantity < 0 ? 'rgba(255, 99, 132, 1)' : 
-      'rgba(75, 192, 192, 1)'
-    );
 
     datasets.push({
       label: produto,
@@ -74,6 +80,7 @@
     });
   });
 
+  // Inicializar o gráfico de controle de estoque por armazém
   new Chart(document.getElementById('stockChart').getContext('2d'), {
     type: 'bar',
     data: {
@@ -85,14 +92,21 @@
         title: { display: true, text: 'Quantidade de Produtos por Armazém' },
         tooltip: { 
           callbacks: { 
-            label: context => `${context.dataset.label}: ${context.raw} unidade(s)` 
+            label: context => {
+              const rawValue = context.raw;
+              const productName = context.dataset.label;
+              const stockStatus = rawValue < 0 ? 'Estoque Baixo' : 'Quantidade em Estoque';
+              const quantity = Math.abs(rawValue);
+              
+              return `${productName} - ${stockStatus}: ${quantity} unidade(s)`;
+            } 
           } 
         }
       },
       responsive: true,
       scales: {
         y: { 
-          beginAtZero: false, // Permite valores negativos
+          beginAtZero: true, 
           title: { display: true, text: 'Quantidade de Produtos' } 
         },
         x: { title: { display: true, text: 'Armazéns' } }
@@ -101,19 +115,26 @@
   });
 </script>
 
-
-
 <!-- Script para gerar o gráfico de Produtos em Estoque -->
 <script>
   var productLabels = {!! json_encode($estoquePorProduto->keys()) !!};
   var productData = {!! json_encode($estoquePorProduto->values()) !!};
-  var productColors = productData.map(quantity => quantity < 50 ? 'rgba(255, 99, 132, 1)' : quantity < 100 ? 'rgba(255, 206, 86, 1)' : 'rgba(75, 192, 192, 1)');
+  var productColors = productData.map(quantity => 
+    quantity < 50 ? 'rgba(255, 99, 132, 1)' : 
+    quantity < 100 ? 'rgba(255, 206, 86, 1)' : 
+    'rgba(75, 192, 192, 1)'
+  );
 
   new Chart(document.getElementById('productsChart').getContext('2d'), {
     type: 'bar',
     data: {
       labels: productLabels,
-      datasets: [{ label: 'Quantidade em Estoque', data: productData, backgroundColor: productColors, borderWidth: 1 }]
+      datasets: [{
+        label: 'Quantidade em Estoque',
+        data: productData,
+        backgroundColor: productColors,
+        borderWidth: 1
+      }]
     },
     options: {
       scales: { y: { beginAtZero: true } }

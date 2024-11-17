@@ -11,19 +11,29 @@ use Illuminate\Support\Facades\DB;
 
 class MovimentacaoController extends Controller
 {
-    // Exibe a tela de movimentação para um produto específico
+    /**
+     * Exibe a tela de movimentação para um produto específico.
+     * @param int $id ID do produto
+     * @return \Illuminate\View\View
+     */
     public function TelaMovimentacao($id)
     {
         $user = Auth::user();
         $produto = Produto::findOrFail($id);
-        $armazens = Armazem::all(); // Carregar todos os armazéns
+        $armazens = $user->role === 'admin' ? Armazem::all() : $user->armazens;
 
         return view('Movimentacao', ['user' => $user, 'produto' => $produto, 'armazens' => $armazens]);
     }
 
-    // Registra uma nova movimentação e atualiza o estoque do produto por armazém
+    /**
+     * Registra uma nova movimentação e atualiza o estoque do produto por armazém.
+     * Suporta tipos de movimentação: Entrada, Saída e Transferência.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function CadastrandoMovimentacao(Request $request)
     {
+        // Valida os dados de entrada
         $request->validate([
             'name_user' => 'nullable|string',
             'codigo_produto' => 'required|string',
@@ -31,6 +41,9 @@ class MovimentacaoController extends Controller
             'tipo_mov' => 'required|string|in:Entrada,Saida,Transferencia',
             'armazem_origem' => 'nullable|string',
             'armazem_destino' => 'nullable|string',
+            'codigo_entrada' => 'nullable|string',
+            'codigo_saida' => 'nullable|string',
+            'codigo_pedido' => 'nullable|string',
         ]);
 
         $user = Auth::user();
@@ -72,7 +85,6 @@ class MovimentacaoController extends Controller
                     ['produto_id' => $produto->id, 'armazem_name' => $armazemDestino->name],
                     ['quantidade' => DB::raw("quantidade + $quantidade")]
                 );
-
         } elseif ($tipoMov === 'Entrada') {
             $armazemDestino = Armazem::where('name', $armazemDestinoName)->first();
             if (!$armazemDestino) {
@@ -86,7 +98,6 @@ class MovimentacaoController extends Controller
                 );
 
             $produto->increment('quantidade', $quantidade);
-
         } elseif ($tipoMov === 'Saida') {
             $armazemOrigem = Armazem::where('name', $armazemOrigemName)->first();
             if (!$armazemOrigem) {
@@ -110,23 +121,32 @@ class MovimentacaoController extends Controller
             $produto->decrement('quantidade', $quantidade);
         }
 
+        // Registra a movimentação
         $movimentacao = new Movimentacao;
         $movimentacao->user_id = $user->id;
         $movimentacao->name_user = $request->input('name_user');
         $movimentacao->codigo_produto = $request->input('codigo_produto');
-        $movimentacao->codigo_entrada = $request->input('codigo_entrada', ''); 
-        $movimentacao->codigo_saida = $request->input('codigo_saida', ''); 
-        $movimentacao->codigo_pedido = $request->input('codigo_pedido', ''); 
         $movimentacao->tipo_mov = $tipoMov;
         $movimentacao->quantidade_mov = $quantidade;
         $movimentacao->armazem_origem = $armazemOrigemName;
         $movimentacao->armazem_destino = $armazemDestinoName;
+
+        // Preenchendo os campos obrigatórios com valores padrão
+        $movimentacao->codigo_entrada = $request->input('codigo_entrada', 'N/A');
+        $movimentacao->codigo_saida = $request->input('codigo_saida', 'N/A');
+        $movimentacao->codigo_pedido = $request->input('codigo_pedido', 'N/A');
+
         $movimentacao->save();
 
         return redirect()->route('ListagemMovimentacao')->with('success', 'Movimentação registrada com sucesso.');
     }
 
-    // Atualiza uma movimentação específica
+    /**
+     * Atualiza uma movimentação existente.
+     * @param \Illuminate\Http\Request $request
+     * @param int $id ID da movimentação
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function AtualizandoMovimentacao(Request $request, $id)
     {
         $request->validate([
@@ -139,47 +159,60 @@ class MovimentacaoController extends Controller
         ]);
 
         $movimentacao = Movimentacao::findOrFail($id);
-        $movimentacao->name_user = $request->input('name_user');
-        $movimentacao->codigo_produto = $request->input('codigo_produto');
-        $movimentacao->quantidade_mov = $request->input('quantidade');
-        $movimentacao->tipo_mov = $request->input('tipo_mov');
-        $movimentacao->armazem_origem = $request->input('armazem_origem');
-        $movimentacao->armazem_destino = $request->input('armazem_destino');
-        $movimentacao->save();
+        $movimentacao->update($request->all());
 
         return redirect()->route('ListagemMovimentacao')->with('success', 'Movimentação atualizada com sucesso.');
     }
 
-    // Lista todas as movimentações
+    /**
+     * Lista todas as movimentações realizadas pelo usuário logado.
+     * @return \Illuminate\View\View
+     */
     public function ListagemMovimentacao()
     {
-        $movimentacoes = Movimentacao::all(); // Carrega todas as movimentações, sem filtro de usuário
+        $user = Auth::user();
+        $movimentacoes = Movimentacao::where('user_id', $user->id)->get();
 
         return view('ListagemMovimentacao', ['movimentacoes' => $movimentacoes]);
     }
 
-    public function ConsultaEstoque()
-    {
-        $estoques = DB::table('produto_armazem')
-            ->join('_armazens', 'produto_armazem.armazem_name', '=', '_armazens.name')
-            ->join('_produtos', 'produto_armazem.produto_id', '=', '_produtos.id')
-            ->select('_armazens.name as armazem', '_produtos.descricao as produto', DB::raw('SUM(produto_armazem.quantidade) as quantidade_total'))
-            ->groupBy('_armazens.name', '_produtos.descricao')
-            ->get();
+    /**
+     * Consulta de estoque agrupado por armazém e produto.
+     * @return \Illuminate\View\View
+     */public function ConsultaEstoque()
+{
+    $estoques = DB::table('produto_armazem')
+        ->join('_armazens', 'produto_armazem.armazem_name', '=', '_armazens.name')
+        ->join('_produtos', 'produto_armazem.produto_id', '=', '_produtos.id')
+        ->select(
+            '_armazens.name as armazem',
+            '_produtos.name as produto', // Substituído 'descricao' por 'name'
+            DB::raw('SUM(produto_armazem.quantidade) as quantidade_total')
+        )
+        ->groupBy('_armazens.name', '_produtos.name') // Alterado para agrupar pelo nome do produto
+        ->get();
 
-        return view('ConsultaEstoque', ['estoques' => $estoques]);
-    }
+    return view('ConsultaEstoque', ['estoques' => $estoques]);
+}
 
-    // Exibe a tela de edição de uma movimentação específica
+    /**
+     * Exibe a tela de edição de uma movimentação específica.
+     * @param int $id ID da movimentação
+     * @return \Illuminate\View\View
+     */
     public function editMovimentacao($id)
     {
         $movimentacao = Movimentacao::findOrFail($id);
-        $armazens = Armazem::all();
+        $armazens = Auth::user()->role === 'admin' ? Armazem::all() : Auth::user()->armazens;
 
         return view('EditMovimentacao', ['movimentacao' => $movimentacao, 'armazens' => $armazens]);
     }
 
-    // Deleta uma movimentação específica
+    /**
+     * Exclui uma movimentação específica.
+     * @param int $id ID da movimentação
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function deleteMovimentacao($id)
     {
         $movimentacao = Movimentacao::findOrFail($id);

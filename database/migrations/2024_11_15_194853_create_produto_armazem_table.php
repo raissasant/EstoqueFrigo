@@ -6,33 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('produto_armazem', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('produto_id'); // Referência para a tabela _produtos
-            $table->string('armazem_name'); // Nome do armazém como string
-            $table->integer('quantidade')->default(0);
+            $table->unsignedBigInteger('produto_id');
+            $table->string('armazem_name'); // Usando o nome do armazém
+            $table->integer('quantidade');
             $table->timestamps();
 
-            // Define a chave estrangeira para 'produto_id' com 'id' em '_produtos'
+            // Chave estrangeira para o produto
             $table->foreign('produto_id')->references('id')->on('_produtos')->onDelete('cascade');
-
-            // Índice único para garantir que cada combinação de produto e armazém seja única
+            // Não estamos usando chave estrangeira para armazém, pois estamos usando o nome
+            // Restrição de unicidade para garantir que um produto só possa estar em um armazém uma vez
             $table->unique(['produto_id', 'armazem_name']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('produto_armazem');

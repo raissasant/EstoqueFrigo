@@ -36,7 +36,8 @@
                     <th>CPF</th>
                     <th>Telefone</th>
                     <th>E-mail</th>
-                    <th>Status</th>
+                    <th>Produtos</th> <!-- Coluna Produtos antes de Status -->
+                    <th>Status</th> <!-- Status após Produtos -->
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -49,19 +50,31 @@
                         <td>{{ $fornecedor->cpf }}</td>
                         <td>{{ $fornecedor->telefone }}</td>
                         <td>{{ $fornecedor->email }}</td>
-                        <td class="badge {{ $fornecedor->status === 'inativo' ? 'bg-danger' : 'bg-success' }}">
-                            {{ ucfirst($fornecedor->status) }}
+                        <td>
+                            <!-- Exibição dos produtos associados ao fornecedor -->
+                            @if($fornecedor->produtos->isEmpty())
+                                <span>Nenhum produto</span>
+                            @else
+                                @foreach($fornecedor->produtos as $produto)
+                                    <span>{{ $produto->name }}</span><br>
+                                @endforeach
+                            @endif
                         </td>
                         <td>
-                            <!-- Contêiner flexível para alinhar os botões lado a lado -->
-                            <div style="display: flex; gap: 5px;">
-                                <a href="{{ route('EditFornecedor', ['id' => $fornecedor->id]) }}" class="btn btn-primary btn-sm" style="padding: 4px 8px; font-size: 0.875rem;">
+                            <span class="status-badge {{ $fornecedor->status === 'inativo' ? 'bg-danger' : 'bg-success' }}">
+                                {{ ucfirst($fornecedor->status) }}
+                            </span>
+                        </td>
+                        <td>
+                            <!-- Botões de ação empilhados verticalmente -->
+                            <div class="d-flex flex-column align-items-center action-buttons">
+                                <a href="{{ route('EditFornecedor', ['id' => $fornecedor->id]) }}" class="btn btn-primary btn-sm thin-action mb-1">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
-                                <form action="{{ route('deleteFornecedor', ['id' => $fornecedor->id]) }}" method="POST">
+                                <form action="{{ route('deleteFornecedor', ['id' => $fornecedor->id]) }}" method="POST" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.875rem;" onclick="return confirm('Tem certeza que deseja excluir?');">
+                                    <button type="submit" class="btn btn-danger btn-sm thin-action" onclick="return confirm('Tem certeza que deseja excluir?');">
                                         <i class="fas fa-trash-alt"></i> Excluir
                                     </button>
                                 </form>
@@ -79,5 +92,28 @@
 
 <!-- Scripts Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Estilos Personalizados -->
+<style>
+    /* Estilo para botões finos de ação com largura e altura uniformes */
+    .thin-action {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+        width: 70px;
+        text-align: center;
+    }
+    /* Estilo de status alinhado */
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 6px;
+        width: 70px;
+        display: inline-block;
+        text-align: center;
+    }
+    /* Alinhamento e empilhamento dos botões de ação */
+    .action-buttons {
+        gap: 4px;
+    }
+</style>
 
 @endsection

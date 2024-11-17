@@ -3,23 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Produto; // Importando o modelo de Produto
-use App\Models\User; // Importando o modelo de User
-use App\Models\Admin; // Importando o modelo de Admin
-use Auth; // Para autenticação
-use App\Models\Fornecedor; // Importando o modelo de Fornecedor
-use App\Rules\Cpf; // Regra de validação para CPF
-use App\Rules\CnpjValid; // Regra de validação para CNPJ
-use Illuminate\Validation\ValidationException; // Para exceções de validação
-use SimpleSoftwareIO\QrCode\Facades\QrCode; // Para geração de QR Code
+use App\Models\Produto;
+use App\Models\Fornecedor;
+use App\Models\Armazem;
+use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProdutoController extends Controller
 {
+    // Método para exibir a tela de criação de produto
     public function TelaProduto()
     {
-        return view('Produtos'); // Certifique-se que este é o nome correto da view.
+        $armazens = Armazem::all(); // Carrega todos os armazéns para selecionar na criação
+        $fornecedores = Fornecedor::all(); // Carrega todos os fornecedores
+        return view('Produtos', compact('armazens', 'fornecedores'));
     }
 
+    // Método para armazenar um novo produto
     public function storeProduto(Request $request)
     {
         $request->validate([
@@ -33,50 +33,77 @@ class ProdutoController extends Controller
             'peso' => 'required|string',
             'categoria' => 'required|string',
             'quantidade' => 'required|integer|min:0',
-            'sku' => 'required|string|unique:_produtos,sku', // Ajuste para _produtos
+            'sku' => 'required|string|unique:_produtos,sku',
+            'fornecedor_id' => 'required|array',
+            'data_validade' => 'nullable|date|after_or_equal:today'
         ], [
             'sku.unique' => 'O SKU informado já está em uso.',
             'valor_venda.gte' => 'O Valor de Venda deve ser maior ou igual ao valor de compra.',
         ]);
-
-        $user = Auth::user();
-        $produto = new Produto;
-        $produto->user_id = $user->id;
-        $produto->name = $request->input('name');
-        $produto->descricao = $request->input('descricao');
-        $produto->codigo_produto = $request->input('codigo_produto');
-        $produto->valor_compra = $request->input('valor_compra');
-        $produto->valor_venda = $request->input('valor_venda');
-        $produto->altura = $request->input('altura');
-        $produto->largura = $request->input('largura');
-        $produto->peso = $request->input('peso');
-        $produto->categoria = $request->input('categoria');
-        $produto->quantidade = $request->input('quantidade');
-        $produto->sku = $request->input('sku');
-        $produto->save();
-
-        return redirect()->route('ListagemProduto')->with('success', 'Produto cadastrado com sucesso.');
+    
+        // Fixando o armazém como "Agro"
+        $armazem = Armazem::where('name', 'Agro')->first();
+        if (!$armazem) {
+            return redirect()->back()->withErrors(['armazem' => 'O armazém "Agro" não foi encontrado no sistema.']);
+        }
+    
+        // Criando o produto
+        $produto = Produto::create([
+            'user_id' => Auth::id(),
+            'name' => $request->input('name'),
+            'descricao' => $request->input('descricao'),
+            'codigo_produto' => $request->input('codigo_produto'),
+            'valor_compra' => $request->input('valor_compra'),
+            'valor_venda' => $request->input('valor_venda'),
+            'altura' => $request->input('altura'),
+            'largura' => $request->input('largura'),
+            'peso' => $request->input('peso'),
+            'categoria' => $request->input('categoria'),
+            'quantidade' => $request->input('quantidade'),
+            'sku' => $request->input('sku'),
+            'data_validade' => $request->input('data_validade'),
+        ]);
+    
+        // Associando fornecedores ao produto
+        $produto->fornecedores()->attach($request->input('fornecedor_id'));
+    
+        // Associando o produto ao armazém "Agro"
+        $produto->armazens()->attach($armazem->id, ['quantidade' => $request->input('quantidade')]);
+    
+        return redirect()->route('ListagemProduto')->with('success', 'Produto cadastrado no armazém "Agro" com sucesso.');
     }
+    
 
+    // Método para listar todos os produtos com fornecedores e armazéns
     public function listagemProduto()
     {
-        // Exibe todos os produtos, independente do usuário que os cadastrou
-        $produtos = Produto::all();
-
-        return view('ProdutoListagem', ['produtos' => $produtos]);
+        $produtos = Produto::with(['fornecedores', 'armazens'])->get();
+    
+        // Normaliza os dados relevantes
+        foreach ($produtos as $produto) {
+            $produto->name = utf8_encode($produto->name);
+            $produto->descricao = utf8_encode($produto->descricao);
+            if ($produto->armazens->isNotEmpty()) {
+                $produto->armazens->first()->name = utf8_encode($produto->armazens->first()->name);
+            }
+        }
+    
+        return view('ProdutoListagem', compact('produtos'));
     }
 
+    // Método para exibir a tela de edição de um produto
     public function editProduto($id)
     {
-        // Permite que qualquer usuário acesse qualquer produto para edição
-        $produto = Produto::findOrFail($id);
-
-        return view('editProduto', ['produto' => $produto]);
+        $produto = Produto::with(['fornecedores', 'armazens'])->findOrFail($id);
+        $armazens = Armazem::all(); // Carrega todos os armazéns
+        $fornecedores = Fornecedor::all();
+        return view('editProduto', compact('produto', 'armazens', 'fornecedores'));
     }
 
+    // Método para atualizar um produto específico
     public function AtualizandoProduto(Request $request, $id)
     {
-        $produto = Produto::findOrFail($id); // Permite que qualquer usuário edite qualquer produto
+        $produto = Produto::findOrFail($id);
 
         $request->validate([
             'name' => 'nullable|string|max:80',
@@ -89,45 +116,74 @@ class ProdutoController extends Controller
             'peso' => 'nullable|string',
             'categoria' => 'nullable|string',
             'quantidade' => 'nullable|integer|min:0',
+            'fornecedor_id' => 'nullable|array',
+            'armazem_name' => 'nullable|string|exists:_armazens,name',
+            'data_validade' => 'nullable|date|after_or_equal:today'
         ], [
             'valor_venda.gte' => 'O Valor de Venda deve ser maior ou igual ao valor de compra.',
         ]);
 
-        // Atualiza os campos
-        if ($request->filled('name')) $produto->name = $request->input('name');
-        if ($request->filled('descricao')) $produto->descricao = $request->input('descricao');
-        if ($request->filled('codigo_produto')) $produto->codigo_produto = $request->input('codigo_produto');
-        if ($request->filled('valor_compra')) $produto->valor_compra = $request->input('valor_compra');
-        if ($request->filled('valor_venda')) $produto->valor_venda = $request->input('valor_venda');
-        if ($request->filled('altura')) $produto->altura = $request->input('altura');
-        if ($request->filled('largura')) $produto->largura = $request->input('largura');
-        if ($request->filled('peso')) $produto->peso = $request->input('peso');
-        if ($request->filled('categoria')) $produto->categoria = $request->input('categoria');
-        if ($request->filled('quantidade')) $produto->quantidade = $request->input('quantidade');
+        // Atualização do produto com os dados validados
+        $produto->update($request->only([
+            'name', 'descricao', 'codigo_produto', 'valor_compra', 'valor_venda', 
+            'altura', 'largura', 'peso', 'categoria', 'quantidade', 'data_validade'
+        ]));
 
-        $produto->save();
+        // Atualizar fornecedores associados ao produto
+        $produto->fornecedores()->sync($request->input('fornecedor_id', []));
+
+        // Atualiza o armazém do produto, se necessário
+        if ($request->has('armazem_name')) {
+            $armazem = Armazem::where('name', $request->input('armazem_name'))->first();
+            if ($armazem) {
+                $produto->armazens()->sync([$armazem->id]);
+            }
+        }
 
         return redirect()->route('ListagemProduto')->with('success', 'Produto atualizado com sucesso.');
     }
 
+    // Método para excluir um produto específico
     public function deleteProduto($id)
     {
-        // Permite que qualquer usuário delete qualquer produto
         $produto = Produto::findOrFail($id);
+        $produto->fornecedores()->detach();
+        $produto->armazens()->detach(); // Desvincula o armazém
+        $produto->delete();
 
-        if ($produto) {
-            $produto->delete();
-            return redirect()->route('ListagemProduto')->with('success', 'Produto deletado com sucesso.');
-        } else {
-            return 'Produto não encontrado.';
-        }
+        return redirect()->route('ListagemProduto')->with('success', 'Produto deletado com sucesso.');
     }
 
+
+    public function getProdutoAtualizado($id)
+{
+    // Busca o produto pelo ID com os relacionamentos necessários
+    $produto = Produto::with(['armazem', 'fornecedores'])->findOrFail($id);
+
+    // Retorna o produto no formato JSON
+    return response()->json([
+        'id' => $produto->id,
+        'name' => $produto->name,
+        'categoria' => $produto->categoria,
+        'sku' => $produto->sku,
+        'valor_compra' => number_format($produto->valor_compra, 2, ',', '.'),
+        'valor_venda' => number_format($produto->valor_venda, 2, ',', '.'),
+        'quantidade' => $produto->quantidade,
+        'armazem' => [
+            'nome' => $produto->armazem->nome ?? 'N/A'
+        ],
+        'fornecedores' => $produto->fornecedores->map(function ($fornecedor) {
+            return ['name' => $fornecedor->name];
+        }),
+    ]);
+}
+
+
+
+    // Método de busca de produtos por nome ou código
     public function SearchProduto(Request $request)
     {
         $search = $request->input('search');
-
-        // Busca sem filtro por usuário
         $query = Produto::query();
 
         if ($search) {
@@ -137,11 +193,33 @@ class ProdutoController extends Controller
             });
         }
 
-        $produtos = $query->get();
+        $produtos = $query->with(['fornecedores', 'armazens'])->get();
 
         return view('ProdutoListagem', [
             'produtos' => $produtos,
             'message' => $produtos->isEmpty() ? 'Nenhum produto encontrado para a busca "' . $search . '"' : null
+        ]);
+    }
+
+    // Método para fornecer os detalhes de um produto (API para QR Code)
+    public function DetalhesProduto($id)
+    {
+        $produto = Produto::with('armazens')->findOrFail($id);
+
+        return response()->json([
+            'produto' => [
+                'id' => $produto->id,
+                'name' => $produto->name,
+                'descricao' => $produto->descricao,
+                'sku' => $produto->sku,
+                'quantidade' => $produto->quantidade,
+            ],
+            'armazens' => $produto->armazens->map(function ($armazem) {
+                return [
+                    'name' => $armazem->name,
+                    'quantidade' => $armazem->pivot->quantidade,
+                ];
+            }),
         ]);
     }
 }

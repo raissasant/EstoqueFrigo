@@ -27,15 +27,19 @@ class AdminController extends Controller
 
         // Dados para os gráficos - agrupamento de estoque por armazém e por produto
         $estoquePorArmazem = DB::table('produto_armazem')
-            ->join('_armazens', 'produto_armazem.armazem_name', '=', '_armazens.name')
+            ->join('_armazens', 'produto_armazem.armazem_name', '=', '_armazens.name') // Usando armazem_name
             ->join('_produtos', 'produto_armazem.produto_id', '=', '_produtos.id')
-            ->select('_armazens.name as armazem', '_produtos.descricao as produto', DB::raw('SUM(produto_armazem.quantidade) as total'))
-            ->groupBy('_armazens.name', '_produtos.descricao')
+            ->select(
+                '_armazens.name as armazem',
+                '_produtos.name as produto', // Alterado para trazer o nome do produto
+                DB::raw('SUM(produto_armazem.quantidade) as total')
+            )
+            ->groupBy('_armazens.name', '_produtos.name') // Agrupando pelo nome do produto
             ->get()
             ->groupBy('armazem');
 
         // Agrupamento de estoque total por produto para exibição
-        $estoquePorProduto = Produto::select('descricao', 'quantidade')->pluck('quantidade', 'descricao');
+        $estoquePorProduto = Produto::select('name', 'quantidade')->pluck('quantidade', 'name');
 
         // Renderizar a view com todos os dados necessários
         return view('homeAdmin', [
@@ -44,9 +48,9 @@ class AdminController extends Controller
             'contagemProduto' => $contagemProduto,
             'contagemArmazem' => $contagemArmazem,
             'contagemMovimentacao' => $contagemMovimentacao,
+            'totalProdutosEmEstoque' => $totalProdutosEmEstoque,
             'estoquePorArmazem' => $estoquePorArmazem,
             'estoquePorProduto' => $estoquePorProduto,
-            'totalProdutosEmEstoque' => $totalProdutosEmEstoque,
         ]);
     }
 }

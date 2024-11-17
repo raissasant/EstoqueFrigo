@@ -79,6 +79,20 @@
         <button type="submit" class="btn btn-primary">Atualizar</button>
     </form>
 
+    <!-- Exibição dos Produtos Associados ao Fornecedor -->
+    <div class="mt-5">
+        <h3>Produtos Associados</h3>
+        @if($fornecedor->produtos->isEmpty())
+            <p>Este fornecedor não possui produtos associados.</p>
+        @else
+            <ul>
+                @foreach($fornecedor->produtos as $produto)
+                    <li>{{ $produto->name }} (Código: {{ $produto->codigo_produto }}, Categoria: {{ $produto->categoria }})</li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
+
     <!-- Exibição de Erros de Validação -->
     @if ($errors->any())
         <div class="alert alert-danger mt-3">

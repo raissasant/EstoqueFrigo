@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Fornecedor extends Model
 {
-    protected $table = '_fornecedores'; // Nome da tabela
+    protected $table = '_fornecedores';
 
     protected $fillable = [
-        'admin_id',
+        'user_id',
         'name',
         'cnpj',
         'cpf',
@@ -25,8 +25,14 @@ class Fornecedor extends Model
     ];
 
     // Relacionamento com o administrador
-    public function admin()
+    public function isAdmin()
     {
-        return $this->belongsTo(User::class, 'admin_id');
+        return $this->role === 'admin';
+    }
+
+    // Relacionamento muitos-para-muitos com produtos
+    public function produtos()
+    {
+        return $this->belongsToMany(Produto::class, 'fornecedor_produto');
     }
 }

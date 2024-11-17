@@ -38,48 +38,50 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // -- Fim do CRUD do Usuário --\\
 
     # -- CRUD de Fornecedores (somente administradores) -- #
-    Route::get('/cadastro/fornecedor', [FornecedorController::class, 'indexFornecedor'])->name('indexFornecedor'); // Exibe o formulário de cadastro de fornecedor
-    Route::post('/cadastrando/fornecedor', [FornecedorController::class, 'storeFornecedor'])->name('storeFornecedor'); // Processa o cadastro de fornecedor
-    Route::get('/editar/fornecedor/{id}', [FornecedorController::class, 'EditFornecedor'])->name('EditFornecedor'); // Exibe o formulário de edição de fornecedor
-    Route::post('/editando/fornecedor/{id}', [FornecedorController::class, 'AtualizandoFornecedor'])->name('atualizandoFornecedor'); // Processa a atualização de fornecedor
-    Route::delete('/deletar/fornecedor/{id}', [FornecedorController::class, 'DeleteFornecedor'])->name('deleteFornecedor'); // Exclui um fornecedor
+    Route::get('/cadastro/fornecedor', [FornecedorController::class, 'indexFornecedor'])->name('indexFornecedor');
+    Route::post('/cadastrando/fornecedor', [FornecedorController::class, 'storeFornecedor'])->name('storeFornecedor');
+    Route::get('/editar/fornecedor/{id}', [FornecedorController::class, 'EditFornecedor'])->name('EditFornecedor');
+    Route::post('/editando/fornecedor/{id}', [FornecedorController::class, 'AtualizandoFornecedor'])->name('atualizandoFornecedor');
+    Route::delete('/deletar/fornecedor/{id}', [FornecedorController::class, 'DeleteFornecedor'])->name('deleteFornecedor');
 });
 
 ########################### Rotas Compartilhadas entre Administrador e Usuário Comum ##########################
 Route::middleware(['auth'])->group(function () {
     // Rotas para CRUD de Produtos
-    Route::get('/cadastro/produto', [ProdutoController::class, 'TelaProduto'])->name('cadastroProduto'); // Exibe o formulário de cadastro de produto
-    Route::post('/cadastrando/produto', [ProdutoController::class, 'storeProduto'])->name('storeProduto'); // Processa o cadastro de produto
-    Route::get('/listagem/produto', [ProdutoController::class, 'listagemProduto'])->name('ListagemProduto'); // Lista todos os produtos
-    Route::get('/atualizar/produto/{id}', [ProdutoController::class, 'editProduto'])->name('editProduto'); // Exibe o formulário de edição de produto
-    Route::post('/editando/produto/{id}', [ProdutoController::class, 'atualizandoProduto'])->name('atualizandoProduto'); // Processa a atualização de produto
-    Route::delete('/produtos/{id}', [ProdutoController::class, 'deleteProduto'])->name('deleteProduto'); // Exclui um produto
-    Route::get('/produto/search', [ProdutoController::class, 'SearchProduto'])->name('SearchProduto'); // Busca produtos
+    Route::get('/cadastro/produto', [ProdutoController::class, 'TelaProduto'])->name('cadastroProduto');
+    Route::post('/cadastrando/produto', [ProdutoController::class, 'storeProduto'])->name('storeProduto');
+    Route::get('/listagem/produto', [ProdutoController::class, 'listagemProduto'])->name('ListagemProduto');
+    Route::get('/atualizar/produto/{id}', [ProdutoController::class, 'editProduto'])->name('editProduto');
+    Route::post('/editando/produto/{id}', [ProdutoController::class, 'atualizandoProduto'])->name('atualizandoProduto');
+    Route::delete('/produtos/{id}', [ProdutoController::class, 'deleteProduto'])->name('deleteProduto');
+    Route::get('/produto/search', [ProdutoController::class, 'SearchProduto'])->name('SearchProduto');
+    // Endpoint para obter os dados atualizados de um produto
+    Route::get('/produto/{id}/atualizado', [ProdutoController::class, 'getProdutoAtualizado'])->name('produtoAtualizado');
 
     // Rotas para CRUD de Armazéns
-    Route::get('/cadastro/armazem', [ArmazemController::class, 'TelaArmazem'])->name('cadastroArmazem'); // Exibe o formulário de cadastro de armazém
-    Route::post('/cadastrando/armazem', [ArmazemController::class, 'storeArmazem'])->name('storeArmazem'); // Processa o cadastro de armazém
-    Route::get('/armazens', [ArmazemController::class, 'ListagemArmazem'])->name('ListagemArmazem'); // Lista todos os armazéns
-    Route::get('/atualizar/armazem/{id}', [ArmazemController::class, 'editArmazem'])->name('editArmazem'); // Exibe o formulário de edição de armazém
-    Route::post('/editando/armazem/{id}', [ArmazemController::class, 'AtualizandoArmazem'])->name('atualizandoArmazem'); // Processa a atualização de armazém
-    Route::delete('/delete/armazem/{id}', [ArmazemController::class, 'deleteArmazem'])->name('deleteArmazem'); // Exclui um armazém
+    Route::get('/cadastro/armazem', [ArmazemController::class, 'TelaArmazem'])->name('cadastroArmazem');
+    Route::post('/cadastrando/armazem', [ArmazemController::class, 'storeArmazem'])->name('storeArmazem');
+    Route::get('/armazens', [ArmazemController::class, 'ListagemArmazem'])->name('ListagemArmazem');
+    Route::get('/atualizar/armazem/{id}', [ArmazemController::class, 'editArmazem'])->name('editArmazem');
+    Route::post('/editando/armazem/{id}', [ArmazemController::class, 'AtualizandoArmazem'])->name('atualizandoArmazem');
+    Route::delete('/delete/armazem/{id}', [ArmazemController::class, 'deleteArmazem'])->name('deleteArmazem');
 
     // Movimentação de Produtos
-    Route::get('/cadastro/movimentação/{id}', [MovimentacaoController::class, 'TelaMovimentacao'])->name('TelaMovimentacao');
-    Route::post('/cadastrando/movimentação', [MovimentacaoController::class, 'CadastrandoMovimentacao'])->name('CadastrandoMovimentacao');
+    Route::get('/cadastro/movimentacao/{id}', [MovimentacaoController::class, 'TelaMovimentacao'])->name('TelaMovimentacao');
+    Route::post('/cadastrando/movimentacao', [MovimentacaoController::class, 'CadastrandoMovimentacao'])->name('CadastrandoMovimentacao');
     Route::get('/consulta/estoque', [MovimentacaoController::class, 'ConsultaEstoque'])->name('ConsultaEstoque');
-    Route::get('/listagem/movimentação', [MovimentacaoController::class, 'ListagemMovimentacao'])->name('ListagemMovimentacao');
-    Route::get('/atualizar/movimentação/{id}', [MovimentacaoController::class, 'editMovimentacao'])->name('editMovimentacao');
-    Route::post('editando/movimentação/{id}', [MovimentacaoController::class, 'AtualizandoMovimentacao'])->name('atualizandoMovimentacao');
-    Route::delete('delete/movimentação/{id}', [MovimentacaoController::class, 'deleteMovimentacao'])->name('deleteMovimentacao');
+    Route::get('/listagem/movimentacao', [MovimentacaoController::class, 'ListagemMovimentacao'])->name('ListagemMovimentacao');
+    Route::get('/atualizar/movimentacao/{id}', [MovimentacaoController::class, 'editMovimentacao'])->name('editMovimentacao');
+    Route::post('editando/movimentacao/{id}', [MovimentacaoController::class, 'AtualizandoMovimentacao'])->name('atualizandoMovimentacao');
+    Route::delete('delete/movimentacao/{id}', [MovimentacaoController::class, 'deleteMovimentacao'])->name('deleteMovimentacao');
 
-    // Listagem e Pesquisa de Fornecedores (Acessível para todos os usuários autenticados)
-    Route::get('/listagem/fornecedor', [FornecedorController::class, 'listagemFornecedor'])->name('listagemFornecedor'); // Lista todos os fornecedores
-    Route::get('/fornecedores/search', [FornecedorController::class, 'searchFornecedores'])->name('searchFornecedores'); // Busca fornecedores
+    
+    // Listagem e Pesquisa de Fornecedores
+    Route::get('/listagem/fornecedor', [FornecedorController::class, 'listagemFornecedor'])->name('listagemFornecedor');
+    Route::get('/fornecedores/search', [FornecedorController::class, 'searchFornecedores'])->name('searchFornecedores');
 });
 
-########################### Rotas do Usuário Comum (Somente o Dashboard) ##########################
+########################### Rotas do Usuário Comum ##########################
 Route::middleware(['auth'])->group(function () {
-    // Tela home do usuário comum
-    Route::get('/home', [UsuarioController::class, 'homeUsuario'])->name('homeUsuario'); // Painel do usuário comum (tela protegida)
+    Route::get('/home', [UsuarioController::class, 'homeUsuario'])->name('homeUsuario');
 });

@@ -4,22 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Fornecedor;
+use App\Models\Produto;
 use Illuminate\Support\Facades\Auth;
-use App\Rules\Cpf;
-use App\Rules\CnpjValid;
 
 class FornecedorController extends Controller
 {
-    // Método para listar todos os fornecedores - acessível para todos os usuários
+    // Método para listar todos os fornecedores
     public function listagemFornecedor()
     {
-        $fornecedores = Fornecedor::all();
-        return view('listagemFornecedor', ['fornecedores' => $fornecedores]);
+        $fornecedores = Fornecedor::with('produtos')->get(); // Carrega fornecedores com produtos associados
+        return view('listagemFornecedor', compact('fornecedores'));
     }
 
-    // Método para exibir a tela de criação de fornecedor - acessível apenas para administradores
+    // Método para exibir a tela de criação de fornecedor
     public function indexFornecedor()
     {
+        // Permite apenas para administradores
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('homeUsuario')->withErrors(['Você não tem permissão para acessar esta área.']);
         }
@@ -27,24 +27,25 @@ class FornecedorController extends Controller
         return view('TelaFornecedor');
     }
 
-    // Método para cadastrar um novo fornecedor - acessível apenas para administradores
+    // Método para cadastrar um novo fornecedor
     public function storeFornecedor(Request $request)
     {
+        // Permite apenas para administradores
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('homeUsuario')->withErrors(['Você não tem permissão para acessar esta área.']);
         }
 
         $request->validate([
             'name' => 'required|string|max:60',
-            'cnpj' => ['nullable', 'string', new CnpjValid(), 'unique:_fornecedores,cnpj'],
-            'cpf' =>  ['nullable', 'string', new Cpf(), 'unique:_fornecedores,cpf'],
-            'telefone' => 'string',
-            'cep' =>  'string',
-            'rua' =>  'string',
+            'cnpj' => 'nullable|string|unique:_fornecedores,cnpj',
+            'cpf' => 'nullable|string|unique:_fornecedores,cpf',
+            'telefone' => 'required|string',
+            'cep' => 'required|string',
+            'rua' => 'required|string',
             'complemento' => 'nullable|string',
-            'bairro' =>  'string',
-            'cidade' =>  'string',
-            'uf' =>  'string',
+            'bairro' => 'required|string',
+            'cidade' => 'required|string',
+            'uf' => 'required|string',
             'email' => 'nullable|email',
             'status' => 'required|string'
         ], [
@@ -52,39 +53,41 @@ class FornecedorController extends Controller
             'cpf.unique' => 'O CPF digitado já está em uso.',
         ]);
 
-        $fornecedor = new Fornecedor;
-        $fornecedor->user_id = Auth::id();
-        $fornecedor->name = $request->input('name');
-        $fornecedor->cnpj = $request->input('cnpj');
-        $fornecedor->cpf = $request->input('cpf');
-        $fornecedor->telefone = $request->input('telefone');
-        $fornecedor->cep = $request->input('cep');
-        $fornecedor->rua = $request->input('rua');
-        $fornecedor->complemento = $request->input('complemento');
-        $fornecedor->bairro = $request->input('bairro');
-        $fornecedor->cidade = $request->input('cidade');
-        $fornecedor->uf = $request->input('uf');
-        $fornecedor->email = $request->input('email');
-        $fornecedor->status = $request->input('status');
-        $fornecedor->save();
+        $fornecedor = Fornecedor::create([
+            'user_id' => Auth::id(),
+            'name' => $request->input('name'),
+            'cnpj' => $request->input('cnpj'),
+            'cpf' => $request->input('cpf'),
+            'telefone' => $request->input('telefone'),
+            'cep' => $request->input('cep'),
+            'rua' => $request->input('rua'),
+            'complemento' => $request->input('complemento'),
+            'bairro' => $request->input('bairro'),
+            'cidade' => $request->input('cidade'),
+            'uf' => $request->input('uf'),
+            'email' => $request->input('email'),
+            'status' => $request->input('status'),
+        ]);
 
         return redirect()->route('listagemFornecedor')->with('success', 'Fornecedor cadastrado com sucesso.');
     }
 
-    // Método para editar um fornecedor específico - acessível apenas para administradores
+    // Método para exibir a tela de edição de um fornecedor específico
     public function EditFornecedor($id)
     {
+        // Permite apenas para administradores
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('homeUsuario')->withErrors(['Você não tem permissão para acessar esta área.']);
         }
 
-        $fornecedor = Fornecedor::findOrFail($id);
-        return view('EditFornecedor', ['fornecedor' => $fornecedor]);
+        $fornecedor = Fornecedor::with('produtos')->findOrFail($id);
+        return view('EditFornecedor', compact('fornecedor'));
     }
 
-    // Método para atualizar um fornecedor específico - acessível apenas para administradores
+    // Método para atualizar um fornecedor específico
     public function AtualizandoFornecedor(Request $request, $id)
     {
+        // Permite apenas para administradores
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('homeUsuario')->withErrors(['Você não tem permissão para acessar esta área.']);
         }
@@ -92,15 +95,15 @@ class FornecedorController extends Controller
         $fornecedor = Fornecedor::findOrFail($id);
 
         $request->validate([
-            'name' => 'nullable|string',
+            'name' => 'nullable|string|max:60',
             'email' => 'nullable|email',
             'telefone' => 'nullable|string',
             'cep' => 'nullable|string',
-            'rua' => 'string',
+            'rua' => 'nullable|string',
             'complemento' => 'nullable|string',
-            'bairro' => 'string',
-            'cidade' => 'string',
-            'uf' => 'string',
+            'bairro' => 'nullable|string',
+            'cidade' => 'nullable|string',
+            'uf' => 'nullable|string',
             'status' => 'nullable|in:ativo,inativo',
         ]);
 
@@ -109,20 +112,22 @@ class FornecedorController extends Controller
         return redirect()->route('listagemFornecedor')->with('success', 'Fornecedor atualizado com sucesso.');
     }
 
-    // Método para excluir um fornecedor específico - acessível apenas para administradores
+    // Método para excluir um fornecedor específico
     public function DeleteFornecedor($id)
     {
+        // Permite apenas para administradores
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('homeUsuario')->withErrors(['Você não tem permissão para acessar esta área.']);
         }
 
         $fornecedor = Fornecedor::findOrFail($id);
+        $fornecedor->produtos()->detach(); // Remove a associação com produtos antes de excluir
         $fornecedor->delete();
 
         return redirect()->route('listagemFornecedor')->with('success', 'Fornecedor deletado com sucesso.');
     }
 
-    // Método de pesquisa de fornecedores - acessível para todos os usuários
+    // Método de pesquisa de fornecedores
     public function searchFornecedores(Request $request)
     {
         $searchTerm = $request->input('search');
@@ -141,8 +146,8 @@ class FornecedorController extends Controller
             $query->where('status', $status);
         }
 
-        $fornecedores = $query->get();
+        $fornecedores = $query->with('produtos')->get();
 
-        return view('listagemFornecedor', ['fornecedores' => $fornecedores]);
+        return view('listagemFornecedor', compact('fornecedores'));
     }
 }
